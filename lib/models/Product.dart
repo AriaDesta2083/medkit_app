@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 //! MEDICAL CHECK UP
@@ -34,13 +35,14 @@ List<DoctorList> listDoctor = [
 
 class PesananItem {
   final int id, price;
+  final Timestamp datecreate;
   final String title,
+      product,
       categories,
       imgurl,
       status,
       payment,
       datepick,
-      datecreate,
       uid,
       name,
       kode;
@@ -49,6 +51,7 @@ class PesananItem {
     required this.id,
     required this.price,
     required this.title,
+    required this.product,
     required this.categories,
     required this.imgurl,
     required this.status,
@@ -72,7 +75,7 @@ class PsikoList {
   PsikoList({
     required this.id,
     required this.images,
-    this.rating = 0.0,
+    this.rating = 4.7,
     this.isFavourite = false,
     this.isPopular = false,
     required this.title,
@@ -233,15 +236,14 @@ Quisquam maiores facere, sapiente recusandae doloribus similique modi aspernatur
 
 class MCUList {
   final int id;
-  final String title, description, time;
-  final List<String> images;
+  final String title, description, time, images;
   final double rating, price;
   final bool isFavourite, isPopular;
 
   MCUList({
     required this.id,
     required this.images,
-    this.rating = 0.0,
+    this.rating = 4.7,
     this.isFavourite = false,
     this.isPopular = false,
     required this.title,
@@ -254,7 +256,7 @@ class MCUList {
 List<MCUList> listMCU = [
   MCUList(
     id: 21,
-    images: ['assets/images/MCU.png'],
+    images: 'assets/images/MCU.png',
     title: 'Paket Bronze I ',
     price: 193200,
     rating: 4.0,
@@ -267,7 +269,7 @@ Pemeriksaan Fisik oleh Dokter''',
   ),
   MCUList(
     id: 22,
-    images: ['assets/images/MCU.png'],
+    images: 'assets/images/MCU.png',
     title: 'Paket Bronze II ',
     price: 233700,
     rating: 4.3,
@@ -280,7 +282,7 @@ Pemeriksaan Fisik oleh Dokter''',
   ),
   MCUList(
     id: 23,
-    images: ['assets/images/MCU.png'],
+    images: 'assets/images/MCU.png',
     title: 'Paket Silver I ',
     price: 444600,
     rating: 4.4,
@@ -296,7 +298,7 @@ Pemeriksaan Fisik oleh Dokter''',
   ),
   MCUList(
     id: 24,
-    images: ['assets/images/MCU.png'],
+    images: 'assets/images/MCU.png',
     title: 'Paket Silver II ',
     price: 509200,
     rating: 4.7,
@@ -315,7 +317,7 @@ Pemeriksaan Fisik oleh Dokter''',
   ),
   MCUList(
     id: 25,
-    images: ['assets/images/MCU.png'],
+    images: 'assets/images/MCU.png',
     title: 'Paket Gold ',
     price: 646950,
     rating: 4.9,
@@ -349,7 +351,7 @@ class RawatList {
   RawatList({
     required this.id,
     required this.images,
-    this.rating = 0.0,
+    this.rating = 4.7,
     this.isFavourite = false,
     this.isPopular = false,
     required this.title,
@@ -464,7 +466,7 @@ class Product {
     required this.id,
     required this.images,
     required this.colors,
-    this.rating = 0.0,
+    this.rating = 4.7,
     this.isFavourite = false,
     this.isPopular = false,
     required this.title,

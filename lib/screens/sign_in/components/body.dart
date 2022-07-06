@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:medkit_app/components/no_account_text.dart';
 import 'package:medkit_app/components/socal_card.dart';
+import 'package:medkit_app/controller/auth_controllerr.dart';
 import 'package:medkit_app/controller/auth_services.dart';
 import 'package:medkit_app/screens/login_success/login_success_screen.dart';
 import '../../../size_config.dart';
@@ -14,6 +15,7 @@ class Body extends StatefulWidget {
 
 class _BodyState extends State<Body> {
   final authC = Get.find<AuthController>();
+  final authCC = Get.put(AuthControllerr());
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +55,9 @@ class _BodyState extends State<Body> {
                         }),
                     SocalCard(
                       icon: "assets/icons/facebook-2.svg",
-                      press: () {},
+                      press: () {
+                        authCC.login();
+                      },
                     ),
                     SocalCard(
                       icon: "assets/icons/twitter.svg",

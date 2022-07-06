@@ -29,7 +29,7 @@ class CardItem extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(30),
               child: Image.asset(
-                product.images[0],
+                product.images,
                 width: getProportionateScreenWidth(120),
                 height: getProportionateScreenWidth(120),
                 fit: BoxFit.fitHeight,

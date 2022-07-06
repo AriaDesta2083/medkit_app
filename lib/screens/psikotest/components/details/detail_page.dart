@@ -32,8 +32,9 @@ class DetailPsikoScreen extends StatelessWidget {
               //! change data
               cPesan.id.value = agrs.product.id.toInt();
               cPesan.title.value = agrs.product.title.toString();
+              cPesan.product.value = 'Psikologi Test';
               //* memilih pesanan
-              // cPesan.price.value = agrs.product.price[1].toInt();
+              // cPesan.price.value = agrs.product.price[0].toInt();
               cPesan.imgurl.value = agrs.product.images.toString();
               Get.to(() => PesanScreen());
             },

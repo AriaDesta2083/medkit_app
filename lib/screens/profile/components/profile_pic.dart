@@ -60,12 +60,26 @@ class _ProfilePicState extends State<ProfilePic> {
               children: [
                 imagePath == 'default'
                     ? const CircleAvatar(
-                        backgroundColor: kPrimaryColor,
+                        backgroundColor: kWhite,
+                        child: Icon(
+                          Icons.account_circle_rounded,
+                          color: kPrimaryColor,
+                          size: 100,
+                        ),
                       )
-                    : CircleAvatar(
-                        backgroundColor: kPrimaryColor,
-                        backgroundImage: NetworkImage(imagePath.toString()),
-                      ), // auth == null ? Text('aria') : Text(auth!.email.toString()),
+                    : imagePath != null
+                        ? CircleAvatar(
+                            backgroundColor: kPrimaryColor,
+                            backgroundImage: NetworkImage(imagePath.toString()),
+                          )
+                        : const CircleAvatar(
+                            backgroundColor: kOrange,
+                            child: Icon(
+                              Icons.account_circle_rounded,
+                              color: kPrimaryColor,
+                              size: 100,
+                            ),
+                          ), // auth == null ? Text('aria') : Text(auth!.email.toString()),
                 Positioned(
                   right: -1,
                   bottom: 0,

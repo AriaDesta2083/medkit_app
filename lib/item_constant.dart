@@ -15,6 +15,19 @@ const kBlack = Color(0xFF000000);
 const kShadow = Color.fromARGB(137, 29, 28, 28);
 const kGrey = Color(0XFF8B8B8B);
 
+ImageLoadingBuilder loadingCircular =
+    (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+  if (loadingProgress == null) return child;
+  return Center(
+    child: CircularProgressIndicator(
+      value: loadingProgress.expectedTotalBytes != null
+          ? loadingProgress.cumulativeBytesLoaded /
+              loadingProgress.expectedTotalBytes!
+          : null,
+      color: kWhite,
+    ),
+  );
+};
 List<BoxShadow> shadowBOX = [
   BoxShadow(
     color: Color.fromARGB(87, 158, 158, 158),

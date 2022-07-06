@@ -10,7 +10,7 @@ class DoctorScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Doctor'),
+        title: const Text('Doctor'),
       ),
       body: Container(
         child: ListView(scrollDirection: Axis.horizontal, children: [
@@ -45,20 +45,30 @@ class CardDoctor extends StatelessWidget {
           Container(
             height: SizeConfig.screenHeight - 300,
             width: SizeConfig.screenWidth - 40,
-            margin: EdgeInsets.symmetric(horizontal: 15),
+            margin: const EdgeInsets.symmetric(horizontal: 15),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              image: DecorationImage(
-                  image: NetworkImage(product.img.toString()),
-                  fit: BoxFit.fitHeight),
+              borderRadius: BorderRadius.circular(20),
+              gradient: kPrimaryGraColor,
+              // image: DecorationImage(
+              //   image: NetworkImage(product.img.toString()),
+              //   fit: BoxFit.fitHeight,
+              // ),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Image.network(
+                product.img,
+                fit: BoxFit.fitHeight,
+                loadingBuilder: loadingCircular,
+              ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           ElevatedButton(
             onPressed: () {},
-            child: Text('Chat Dokter'),
+            child: const Text('Chat Dokter'),
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20)),

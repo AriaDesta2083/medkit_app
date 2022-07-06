@@ -31,6 +31,7 @@ class DetailMCUScreen extends StatelessWidget {
             press: () {
               //! change data
               cPesan.id.value = agrs.product.id.toInt();
+              cPesan.product.value = 'Medical Check Up';
               cPesan.title.value = agrs.product.title.toString();
               cPesan.price.value = agrs.product.price.toInt();
               cPesan.imgurl.value = agrs.product.images.toString();

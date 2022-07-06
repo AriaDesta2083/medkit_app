@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:medkit_app/controller/wrapper.dart';
 import 'package:medkit_app/item_constant.dart';
+import 'package:medkit_app/routes/app_pages.dart';
 import 'package:medkit_app/screens/activity/activity_screen.dart';
 import 'package:medkit_app/screens/home/home_screen.dart';
+import 'package:medkit_app/screens/massage/home/views/home_view.dart';
 import 'package:medkit_app/screens/profile/profile_screen.dart';
 
 import '../enums.dart';
@@ -64,7 +67,7 @@ class CustomBottomNavBar extends StatelessWidget {
                       ? kPrimaryColor
                       : inActiveIconColor,
                 ),
-                onPressed: () {},
+                onPressed: () => Get.to(WrapperChat()),
               ),
               IconButton(
                   icon: SvgPicture.asset(

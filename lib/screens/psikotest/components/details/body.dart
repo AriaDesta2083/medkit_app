@@ -131,10 +131,13 @@ class ProductDescription extends StatefulWidget {
 }
 
 class _ProductDescriptionState extends State<ProductDescription> {
-  int? myselected = 0;
+  int myselected = 0;
   @override
   Widget build(BuildContext context) {
     final cPesan = Get.find<CPemesanan>();
+    cPesan.price.value = widget.product.price[myselected].toInt();
+    cPesan.categories.value = widget.product.categories[myselected].toString();
+    print(cPesan.categories.value.toString() + cPesan.price.value.toString());
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 30),
       width: double.infinity,
@@ -143,7 +146,8 @@ class _ProductDescriptionState extends State<ProductDescription> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Text(
-            CurrencyFormat.convertToIdr(widget.product.price[myselected!], 2),
+            CurrencyFormat.convertToIdr(
+                widget.product.price[myselected < 0 ? 0 : myselected], 2),
             style: Theme.of(context).textTheme.headline6,
           ),
           SizedBox(
@@ -174,11 +178,12 @@ class _ProductDescriptionState extends State<ProductDescription> {
                         onChanged: (value) {
                           setState(() {
                             myselected = 0;
-                            cPesan.price.value =
-                                widget.product.price[0].toInt();
-                            cPesan.categories.value =
-                                widget.product.categories[0].toString();
-                            print(cPesan.categories.value);
+                            // cPesan.price.value =
+                            //     widget.product.price[0].toInt();
+                            // cPesan.categories.value =
+                            //     widget.product.categories[0].toString();
+                            print(cPesan.categories.value.toString() +
+                                cPesan.price.value.toString());
                           });
                         }),
                     title: Text(
@@ -194,10 +199,12 @@ class _ProductDescriptionState extends State<ProductDescription> {
                         onChanged: (value) {
                           setState(() {
                             myselected = 1;
-                            cPesan.price.value =
-                                widget.product.price[1].toInt();
-                            cPesan.categories.value =
-                                widget.product.categories[1].toString();
+                            // cPesan.price.value =
+                            //     widget.product.price[1].toInt();
+                            // cPesan.categories.value =
+                            //     widget.product.categories[1].toString();
+                            print(cPesan.categories.value.toString() +
+                                cPesan.price.value.toString());
                           });
                         }),
                     title: Text(

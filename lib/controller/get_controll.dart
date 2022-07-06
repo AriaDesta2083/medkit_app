@@ -1,9 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:medkit_app/item_constant.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class CPayment extends GetxController {
@@ -20,6 +17,7 @@ class CPemesanan extends GetxController {
       FirebaseFirestore.instance.collection('pesanan');
 
   var id = 0.obs;
+  var product = 'default'.obs;
   var title = 'default'.obs;
   var price = 0.obs;
   var categories = 'default'.obs;
@@ -27,13 +25,28 @@ class CPemesanan extends GetxController {
   var status = 'default'.obs;
   var payment = 'default'.obs;
   var datepick = 'default'.obs;
-  var datecreate = 'default'.obs;
   var uid = 'default'.obs;
   var name = 'default'.obs;
   var kode = 'default'.obs;
 
+  void onReload() {
+    id.value = 0;
+    product.value = 'default';
+    title.value = 'default';
+    price.value = 0;
+    categories.value = 'default';
+    imgurl.value = 'default';
+    status.value = 'default';
+    payment.value = 'default';
+    datepick.value = 'default';
+    uid.value = 'default';
+    name.value = 'default';
+    kode.value = 'default';
+  }
+
   void onCekPesan() {
     kode.value = id.value.toString().randomItem() +
+        product.value.toString().randomItem() +
         title.value.toString().randomItem() +
         price.value.toString().randomItem() +
         categories.value.toString().randomItem() +
@@ -41,11 +54,13 @@ class CPemesanan extends GetxController {
         status.value.toString().randomItem() +
         payment.value.toString().randomItem() +
         datepick.value.toString().substring(6).randomItem() +
-        datecreate.value.toString().substring(6).randomItem() +
+        // datecreate.value.toString().substring(6).randomItem() +
         uid.value.toString().randomItem() +
         name.value.toString().randomItem();
     print('DATA UPDATE \n \n ' +
         id.value.toString() +
+        '\n' +
+        product.value.toString() +
         '\n' +
         title.value.toString() +
         '\n' +
@@ -61,8 +76,8 @@ class CPemesanan extends GetxController {
         '\n' +
         datepick.value.toString() +
         '\n' +
-        datecreate.value.toString() +
-        '\n' +
+        // datecreate.value.toString() +
+        // '\n' +
         uid.value.toString() +
         '\n' +
         name.value.toString() +
@@ -75,13 +90,14 @@ class CPemesanan extends GetxController {
         .add({
           'id': id.toInt(),
           'title': title.toString(),
+          'product': product.value.toString(),
           'price': price.toInt(),
           'categories': categories.toString(),
           'imgurl': imgurl.toString(),
           'payment': payment.toString(),
           'status': status.toString(),
           'datepick': datepick.toString(),
-          'datecreate': datecreate.toString(),
+          'datecreate': Timestamp.now(),
           'uid': uid.toString(),
           'name': name.toString(),
           'kode': kode.toString().toUpperCase()

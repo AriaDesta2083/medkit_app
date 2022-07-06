@@ -54,12 +54,15 @@ class _CompletePesanFormState extends State<CompletePesanForm> {
   final cpayment = Get.put(CPayment());
   final cPesan = Get.put(CPemesanan());
   DateTime selectedDay = DateTime.now();
+  DateTime date = DateTime.now().weekday == 6
+      ? DateTime.now().add(Duration(days: 2))
+      : DateTime.now().weekday == 7
+          ? DateTime.now().add(Duration(days: 1))
+          : DateTime.now();
   String? datepick = 'Pilih Tanggal Janji Medis';
   String? name;
   String? id;
   String? email;
-  String pesan = 'Data belum terisi';
-
   // String? lastName;
   String? phoneNumber;
   String? address;
@@ -99,30 +102,17 @@ class _CompletePesanFormState extends State<CompletePesanForm> {
                 address = myData[i]['addres'];
                 email = myData[i]['email'];
               }
-
-              // var test = id.toString() +
-              //     name.toString() +
-              //     email.toString() +
-              //     address.toString();
-
             } else if (myData.isEmpty) {
-              name = auth!.displayName == null
-                  ? pesan
-                  : auth!.displayName.toString();
-              phoneNumber = auth!.phoneNumber == null
-                  ? pesan
-                  : auth!.phoneNumber.toString();
-              address = pesan;
-              email = auth!.email.toString() == null
-                  ? pesan
-                  : auth!.email.toString();
-
+              name = auth!.displayName;
+              phoneNumber = auth!.phoneNumber;
+              address = null;
+              email = auth!.email;
               profile.add({
                 'id': auth!.uid,
-                'name': name.toString(),
-                'phone': phoneNumber.toString(),
-                'addres': address.toString(),
-                'email': email.toString(),
+                'name': name,
+                'phone': phoneNumber,
+                'addres': address,
+                'email': email,
               });
               // print('profile belum siap');
             }
@@ -152,9 +142,9 @@ class _CompletePesanFormState extends State<CompletePesanForm> {
                     onPressed: () {
                       showDatePicker(
                           context: context,
-                          initialDate: selectedDay,
+                          initialDate: date,
                           locale: Locale("id", "ID"),
-                          firstDate: DateTime.now(),
+                          firstDate: date,
                           lastDate: DateTime(DateTime.now().year + 2),
                           helpText: 'JANJI MEDIS',
                           selectableDayPredicate: (DateTime q) {
@@ -241,15 +231,16 @@ class _CompletePesanFormState extends State<CompletePesanForm> {
                         //! FINAL PEMBAYARAN ///////
                         cPesan.uid.value = auth!.uid;
                         cPesan.datepick.value = datepick.toString();
-                        cPesan.datecreate.value =
-                            DateFormat('EEEE, dd MMMM y', 'id')
-                                .format(DateTime.now())
-                                .toString();
                         cPesan.payment.value =
                             cpayment.payment.value.toString();
                         cPesan.name.value = name.toString();
                         setState(() {
                           cPesan.onCekPesan();
+                          profile.doc(id).update({
+                            'name': name,
+                            'phone': phoneNumber,
+                            'address': address,
+                          });
                         });
                         cPesan.onPemesanan();
                         //! ////////////////////////
@@ -277,9 +268,7 @@ class _CompletePesanFormState extends State<CompletePesanForm> {
 
   TextFormField buildAddressFormField(String addres) {
     return TextFormField(
-      initialValue: addres.toString() == pesan || addres == null
-          ? null
-          : addres.toString(),
+      initialValue: addres.toString() == 'Null' ? null : addres,
       onSaved: (newValue) => address = newValue,
       onChanged: (value) {
         if (value.isNotEmpty) {
@@ -308,8 +297,7 @@ class _CompletePesanFormState extends State<CompletePesanForm> {
 
   TextFormField buildPhoneNumberFormField(String phone) {
     return TextFormField(
-      initialValue:
-          phone.toString() == pesan || phone == null ? null : phone.toString(),
+      initialValue: phone.toString() == 'null' ? null : phone,
       keyboardType: TextInputType.phone,
       onSaved: (newValue) => phoneNumber = newValue,
       onChanged: (value) {
@@ -358,9 +346,7 @@ class _CompletePesanFormState extends State<CompletePesanForm> {
 
   TextFormField buildNameFormField(String myname) {
     return TextFormField(
-      initialValue: myname.toString() == pesan || myname == null
-          ? null
-          : myname.toString(),
+      initialValue: myname == null ? null : myname.toString(),
       onSaved: (newValue) => name = newValue,
       onChanged: (value) {
         if (value.isNotEmpty) {

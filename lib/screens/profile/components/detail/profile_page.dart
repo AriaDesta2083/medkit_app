@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:medkit_app/components/form_error.dart';
@@ -29,11 +28,10 @@ class _ProfilePageState extends State<ProfilePage> {
     CollectionReference profile = firestore.collection('profile');
 
     var id;
-    String? name = 'Data belum terisi';
-    String? addres = 'Data belum terisi';
-    String? phone = 'Data belum terisi';
-    String? email = 'Data belum terisi';
-    String pesan = 'Data belum terisi';
+    String? name;
+    String? addres;
+    String? phone;
+    String? email;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -55,21 +53,17 @@ class _ProfilePageState extends State<ProfilePage> {
                 }
                 print('profile siap');
               } else if (myData.isEmpty) {
-                name = auth!.displayName == null
-                    ? pesan
-                    : auth!.displayName.toString();
-                phone = auth!.phoneNumber == null
-                    ? pesan
-                    : auth!.phoneNumber.toString();
-                addres = pesan;
-                email = auth!.email == null ? pesan : auth!.email.toString();
+                name = auth!.displayName;
+                phone = auth!.phoneNumber;
+                addres = null;
+                email = auth!.email;
 
                 profile.add({
                   'id': auth!.uid,
-                  'name': name.toString(),
-                  'phone': phone.toString(),
-                  'addres': pesan.toString(),
-                  'email': email.toString(),
+                  'name': name,
+                  'phone': phone,
+                  'addres': addres,
+                  'email': email,
                 });
                 print('profile belum siap');
               }
@@ -175,93 +169,104 @@ class _CardMenuProfileState extends State<CardMenuProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 0,
-      child: ListTile(
-          leading: widget.icons,
-          title: Text(
-            widget.title.toString(),
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          subtitle: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                widget.value.toString(),
-                style: Theme.of(context).textTheme.bodyLarge,
+    return Column(
+      children: [
+        Card(
+          elevation: 0,
+          child: ListTile(
+              leading: widget.icons,
+              title: Text(
+                widget.title.toString(),
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
-              if (widget.pesan != null)
-                Text(
-                  widget.pesan.toString(),
-                  style: Theme.of(context).textTheme.caption,
-                ),
-            ],
-          ),
-          trailing: widget.trail == true
-              ? IconButton(
-                  icon: Icon(
-                    Icons.edit,
-                    color: kPrimaryColor,
+              subtitle: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.value == null
+                        ? 'Data belum diisi'
+                        : widget.value.toString(),
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
-                  onPressed: () {
-                    Get.defaultDialog(
-                        title: widget.title,
-                        content: Form(
-                          key: _formKey,
-                          child: Column(children: [
-                            TextFormField(
-                              keyboardType: widget.pathname == 'phone'
-                                  ? TextInputType.number
-                                  : widget.pathname == 'name'
-                                      ? TextInputType.name
-                                      : TextInputType.text,
-                              initialValue: widget.value.toString(),
-                              onSaved: (newValue) => valuePath = newValue,
-                              onChanged: (value) {
-                                if (value.isNotEmpty) {
-                                  removeError(error: kUpdateData);
-                                }
-                                return;
-                              },
-                              validator: ((value) {
-                                if (value!.isEmpty) {
-                                  addError(error: kUpdateData);
-                                  return "";
-                                }
-                              }),
-                              decoration: InputDecoration(
-                                border: null,
-                                hintText: 'data tidak boleh kosong',
-                              ),
+                  if (widget.pesan != null)
+                    Text(
+                      widget.pesan.toString(),
+                      style: Theme.of(context).textTheme.caption,
+                    ),
+                ],
+              ),
+              trailing: widget.trail == true
+                  ? IconButton(
+                      icon: Icon(
+                        Icons.edit,
+                        color: kPrimaryColor,
+                      ),
+                      onPressed: () {
+                        Get.defaultDialog(
+                            title: widget.title,
+                            content: Column(
+                              children: [
+                                Form(
+                                  key: _formKey,
+                                  child: Column(children: [
+                                    TextFormField(
+                                      keyboardType: widget.pathname == 'phone'
+                                          ? TextInputType.number
+                                          : widget.pathname == 'name'
+                                              ? TextInputType.name
+                                              : TextInputType.text,
+                                      initialValue: widget.value,
+                                      onSaved: (newValue) =>
+                                          valuePath = newValue,
+                                      onChanged: (value) {
+                                        if (value.isNotEmpty) {
+                                          removeError(error: kUpdateData);
+                                        }
+                                        return;
+                                      },
+                                      validator: ((value) {
+                                        if (value!.isEmpty) {
+                                          addError(error: kUpdateData);
+                                          setState(() {});
+                                          return "";
+                                        }
+                                      }),
+                                      decoration: InputDecoration(
+                                        border: null,
+                                        hintText: 'data tidak boleh kosong',
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    )
+                                  ]),
+                                ),
+                                FormError(errors: errors),
+                              ],
                             ),
-                            FormError(errors: errors),
-                            SizedBox(
-                              height: 5,
-                            )
-                          ]),
-                        ),
-                        textCancel: 'Batal',
-                        onCancel: () {},
-                        buttonColor: kPrimaryColor,
-                        confirmTextColor: kWhite,
-                        cancelTextColor: kPrimaryColor,
-                        textConfirm: 'Selesai',
-                        onConfirm: () {
-                          if (_formKey.currentState!.validate()) {
-                            _formKey.currentState!.save();
-                            KeyboardUtil.hideKeyboard(context);
-
-                            authC.updateProfile(
-                                widget.id.toString(),
-                                widget.pathname.toString(),
-                                valuePath.toString());
-                            Get.back();
-                          }
-                        });
-                  },
-                )
-              : null),
+                            textCancel: 'Batal',
+                            onCancel: () {},
+                            buttonColor: kPrimaryColor,
+                            confirmTextColor: kWhite,
+                            cancelTextColor: kPrimaryColor,
+                            textConfirm: 'Selesai',
+                            onConfirm: () {
+                              if (_formKey.currentState!.validate()) {
+                                _formKey.currentState!.save();
+                                KeyboardUtil.hideKeyboard(context);
+                                authC.updateProfile(
+                                    widget.id.toString(),
+                                    widget.pathname.toString(),
+                                    valuePath.toString());
+                                Get.back();
+                              }
+                            });
+                      },
+                    )
+                  : null),
+        ),
+      ],
     );
   }
 }

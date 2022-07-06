@@ -56,7 +56,7 @@ class _ProductImagesState extends State<ProductImages> {
             child: Hero(
               tag: widget.product.id.toString(),
               child: Image.asset(
-                widget.product.images[selectedImage],
+                widget.product.images,
                 fit: BoxFit.cover,
               ),
             ),

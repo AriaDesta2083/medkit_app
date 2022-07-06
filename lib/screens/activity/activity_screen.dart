@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:medkit_app/components/coustom_bottom_nav_bar.dart';
 import 'package:medkit_app/enums.dart';
 import 'package:medkit_app/item_constant.dart';
 import 'package:medkit_app/models/Product.dart';
+import 'package:medkit_app/screens/activity/components/detail_activity.dart';
 import 'package:medkit_app/size_config.dart';
 
 class ActivityScreen extends StatefulWidget {
@@ -16,45 +18,73 @@ class ActivityScreen extends StatefulWidget {
 
 class _ActivityScreenState extends State<ActivityScreen> {
   final auth = FirebaseAuth.instance.currentUser;
-  CollectionReference pesanan =
-      FirebaseFirestore.instance.collection('pesanan');
+  final Stream<QuerySnapshot> _pesanan = FirebaseFirestore.instance
+      .collection('pesanan')
+      .orderBy('datecreate', descending: true)
+      .snapshots();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'RS Citra Husada Jember',
-        ),
-      ),
+      // appBar: AppBar(
+      //   title: const Text(
+      //     'RS Citra Husada Jember',
+      //   ),
+      // ),
       body: SafeArea(
           child: StreamBuilder<QuerySnapshot>(
-              stream: pesanan.where('uid', isEqualTo: auth!.uid).snapshots(),
+              stream: _pesanan,
               builder: (_, snapshot) {
                 if (snapshot.hasData) {
                   var myItems = snapshot.data!.docs;
                   return ListView(
                       children: myItems
                           .map(
-                            (item) => CardItemPesanan(
-                              PesananItem(
-                                  id: item['id'],
-                                  price: item['price'],
-                                  title: item['title'],
-                                  categories: item['categories'],
-                                  imgurl: item['imgurl'],
-                                  status: item['status'],
-                                  payment: item['payment'],
-                                  datepick: item['datepick'],
-                                  datecreate: item['datecreate'],
-                                  uid: item['uid'],
-                                  name: item['name'],
-                                  kode: item['kode']),
+                            (item) => InkWell(
+                              onTap: () => Get.to(
+                                () => DetailActivity(
+                                  product: PesananItem(
+                                      id: item['id'],
+                                      price: item['price'],
+                                      title: item['title'],
+                                      product: item['product'],
+                                      categories: item['categories'],
+                                      imgurl: item['imgurl'],
+                                      status: item['status'],
+                                      payment: item['payment'],
+                                      datepick: item['datepick'],
+                                      datecreate: item['datecreate'],
+                                      uid: item['uid'],
+                                      name: item['name'],
+                                      kode: item['kode']),
+                                ),
+                              ),
+                              child: CardItemPesanan(
+                                PesananItem(
+                                    id: item['id'],
+                                    price: item['price'],
+                                    title: item['title'],
+                                    product: item['product'],
+                                    categories: item['categories'],
+                                    imgurl: item['imgurl'],
+                                    status: item['status'],
+                                    payment: item['payment'],
+                                    datepick: item['datepick'],
+                                    datecreate: item['datecreate'],
+                                    uid: item['uid'],
+                                    name: item['name'],
+                                    kode: item['kode']),
+                              ),
                             ),
                           )
                           .toList());
                 } else {
-                  return Text(
-                    'Belum ada Pesanan ',
+                  return Container(
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: kShadow,
+                      ),
+                    ),
                   );
                 }
               })),
@@ -84,60 +114,75 @@ class CardItemPesanan extends StatelessWidget {
             children: [
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(30),
-                    child: Image.asset(
-                      product.imgurl.toString(),
-                      width: getProportionateScreenWidth(120),
-                      height: getProportionateScreenWidth(120),
-                      fit: BoxFit.fitHeight,
-                    ),
+                    child: product.id.toInt() > 30 && product.id.toInt() < 40
+                        ? Image.network(
+                            product.imgurl.toString(),
+                            width: getProportionateScreenWidth(120),
+                            height: getProportionateScreenWidth(120),
+                            fit: BoxFit.fitHeight,
+                          )
+                        : Image.asset(
+                            product.imgurl.toString(),
+                            width: getProportionateScreenWidth(120),
+                            height: getProportionateScreenWidth(120),
+                            fit: BoxFit.fitHeight,
+                          ),
                   ),
                   SizedBox(
                     width: 10,
                   ),
                   Container(
-                    width: 150,
-                    child: Text(
-                      product.title,
-                      style: namaStyle.copyWith(
-                          color: kPrimaryColor, fontSize: 15),
-                      softWrap: true,
-                      maxLines: 4,
+                    width: getProportionateScreenWidth(160),
+                    height: getProportionateScreenWidth(120),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          product.title,
+                          style: namaStyle.copyWith(
+                              color: kPrimaryColor, fontSize: 15),
+                          softWrap: true,
+                          maxLines: 3,
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.local_hospital_rounded,
+                              size: 18,
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              product.product.toString(),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.calendar_month_outlined,
+                              size: 18,
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              product.datepick.toString(),
+                            ),
+                          ],
+                        ),
+                        // Text(product.datecreate.toDate().toString()),
+                      ],
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Row(
-                children: [
-                  Icon(
-                    Icons.account_circle_sharp,
-                    size: 18,
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Text(
-                    product.name.toString(),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Icon(
-                    Icons.calendar_month_outlined,
-                    size: 18,
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Text(
-                    product.datepick.toString(),
                   ),
                 ],
               ),

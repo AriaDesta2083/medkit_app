@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:medkit_app/routes.dart';
+import 'package:medkit_app/routes/app_pages.dart';
 import 'package:medkit_app/screens/splash/splash_screen.dart';
 import 'package:medkit_app/theme.dart';
+
+//! Github
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +25,7 @@ class MyApp extends StatelessWidget {
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
       supportedLocales: const [
         Locale('en', 'US'), // American English
-        Locale('id', 'ID'), // Israeli Hebrew
+        Locale('id', 'ID'), // Indonesia
         // ...
       ],
       title: 'Medikal Kit App',
@@ -30,6 +33,7 @@ class MyApp extends StatelessWidget {
       // home: HomeScreen(),
       initialRoute: SplashScreen.routeName,
       routes: routes,
+      // getPages: AppPages.routes,
     );
   }
 }
