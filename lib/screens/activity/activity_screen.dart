@@ -26,11 +26,11 @@ class _ActivityScreenState extends State<ActivityScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text(
-      //     'RS Citra Husada Jember',
-      //   ),
-      // ),
+      appBar: AppBar(
+        title: const Text(
+          'RS Citra Husada Jember',
+        ),
+      ),
       body: SafeArea(
           child: StreamBuilder<QuerySnapshot>(
               stream: _pesanan,

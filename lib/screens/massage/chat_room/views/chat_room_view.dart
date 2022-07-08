@@ -4,21 +4,33 @@ import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:medkit_app/components/default_button.dart';
 import 'package:medkit_app/controller/auth_controllerr.dart';
+import 'package:medkit_app/controller/get_controll.dart';
 import 'package:medkit_app/item_constant.dart';
 import 'package:medkit_app/theme.dart';
 
 import '../controllers/chat_room_controller.dart';
 
-class ChatRoomView extends GetView<ChatRoomController> {
+class ChatRoomView extends StatefulWidget {
   static String routeName = "/chatroomview";
+
+  @override
+  State<ChatRoomView> createState() => _ChatRoomViewState();
+}
+
+class _ChatRoomViewState extends State<ChatRoomView> {
   final authC = Get.find<AuthControllerr>();
+  final konsul = Get.put(cKonsul());
+
   final String chat_id = (Get.arguments as Map<String, dynamic>)["chat_id"];
+
   final String friemail =
       (Get.arguments as Map<String, dynamic>)["friendEmail"];
+
   @override
   final controller = Get.put(ChatRoomController());
-  @override
+
   Widget build(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.height,
@@ -215,86 +227,104 @@ class ChatRoomView extends GetView<ChatRoomController> {
                   ),
                 ),
               ),
-              Container(
-                margin: EdgeInsets.only(
-                  bottom: controller.isShowEmoji.isTrue
-                      ? 5
-                      : context.mediaQueryPadding.bottom,
-                ),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-                width: Get.width,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Container(
-                        child: TextField(
-                          autocorrect: false,
-                          cursorColor: kPrimaryColor,
-                          controller: controller.chatC,
-                          focusNode: controller.focusNode,
-                          onEditingComplete: () => controller.newChat(
-                            authC.user.value.email!,
-                            Get.arguments as Map<String, dynamic>,
-                            controller.chatC.text,
-                          ),
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: kWhite,
-                            prefixIconColor: kPrimaryColor,
-                            prefixIcon: IconButton(
-                              onPressed: () {
-                                controller.focusNode.unfocus();
-                                controller.isShowEmoji.toggle();
-                              },
-                              focusColor: kPrimaryColor,
-                              highlightColor: kPrimaryColor,
-                              icon: const Icon(
-                                Icons.emoji_emotions_outlined,
+              Obx(
+                () => (konsul.isBuy.isFalse)
+                    ? Container(
+                        margin: const EdgeInsets.all(5),
+                        child: DefaultButton(
+                          text: 'KONSULTASI',
+                          press: () {
+                            setState(() {
+                              konsul.onBuy(
+                                  DateTime.now().add(Duration(minutes: 1)));
+                            });
+                          },
+                        ),
+                      )
+                    : Container(
+                        margin: EdgeInsets.only(
+                          bottom: controller.isShowEmoji.isTrue
+                              ? 5
+                              : context.mediaQueryPadding.bottom,
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 5, vertical: 10),
+                        width: Get.width,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Container(
+                                child: TextField(
+                                  autocorrect: false,
+                                  cursorColor: kPrimaryColor,
+                                  controller: controller.chatC,
+                                  focusNode: controller.focusNode,
+                                  onEditingComplete: () => controller.newChat(
+                                    authC.user.value.email!,
+                                    Get.arguments as Map<String, dynamic>,
+                                    controller.chatC.text,
+                                  ),
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: kWhite,
+                                    prefixIconColor: kPrimaryColor,
+                                    prefixIcon: IconButton(
+                                      onPressed: () {
+                                        controller.focusNode.unfocus();
+                                        controller.isShowEmoji.toggle();
+                                      },
+                                      focusColor: kPrimaryColor,
+                                      highlightColor: kPrimaryColor,
+                                      icon: const Icon(
+                                        Icons.emoji_emotions_outlined,
+                                      ),
+                                      color: kPrimaryColor,
+                                    ),
+                                  ).copyWith(
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(28),
+                                      borderSide:
+                                          const BorderSide(color: kWhite),
+                                      gapPadding: 10,
+                                    ),
+                                    floatingLabelBehavior:
+                                        FloatingLabelBehavior.always,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 10),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(28),
+                                      borderSide:
+                                          const BorderSide(color: kWhite),
+                                      gapPadding: 10,
+                                    ),
+                                  ),
+                                ),
                               ),
+                            ),
+                            const SizedBox(width: 10),
+                            Material(
+                              borderRadius: BorderRadius.circular(100),
                               color: kPrimaryColor,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(100),
+                                onTap: () => controller.newChat(
+                                  authC.user.value.email!,
+                                  Get.arguments as Map<String, dynamic>,
+                                  controller.chatC.text,
+                                ),
+                                child: const Padding(
+                                  padding: EdgeInsets.all(12),
+                                  child: const Icon(
+                                    Icons.send,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
                             ),
-                          ).copyWith(
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(28),
-                              borderSide: const BorderSide(color: kWhite),
-                              gapPadding: 10,
-                            ),
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 10),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(28),
-                              borderSide: const BorderSide(color: kWhite),
-                              gapPadding: 10,
-                            ),
-                          ),
+                          ],
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    Material(
-                      borderRadius: BorderRadius.circular(100),
-                      color: kPrimaryColor,
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(100),
-                        onTap: () => controller.newChat(
-                          authC.user.value.email!,
-                          Get.arguments as Map<String, dynamic>,
-                          controller.chatC.text,
-                        ),
-                        child: const Padding(
-                          padding: EdgeInsets.all(12),
-                          child: const Icon(
-                            Icons.send,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
               ),
               Obx(
                 () => (controller.isShowEmoji.isTrue)

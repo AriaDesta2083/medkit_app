@@ -1,8 +1,8 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:medkit_app/components/form_error.dart';
 import 'package:medkit_app/controller/auth_manage.dart';
@@ -25,47 +25,33 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    CollectionReference profile = firestore.collection('profile');
+    CollectionReference profile = firestore.collection('users');
 
     var id;
     String? name;
-    String? addres;
+    String? address;
     String? phone;
     String? email;
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Profil',
         ),
       ),
       body: StreamBuilder<QuerySnapshot>(
-          stream: profile.where('id', isEqualTo: auth!.uid).snapshots(),
+          stream: profile.where('email', isEqualTo: auth!.email).snapshots(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               var myData = snapshot.data!.docs;
               if (myData.isNotEmpty) {
                 for (var i = 0; i < myData.length; i++) {
                   id = myData[i].id;
-                  name = myData[i]['name'];
-                  phone = myData[i]['phone'];
-                  addres = myData[i]['addres'];
-                  email = myData[i]['email'];
+                  name = myData[i]['name'].toString();
+                  phone = myData[i]['phoneNumber'].toString();
+                  address = myData[i]['address'].toString();
+                  email = myData[i]['email'].toString();
                 }
                 print('profile siap');
-              } else if (myData.isEmpty) {
-                name = auth!.displayName;
-                phone = auth!.phoneNumber;
-                addres = null;
-                email = auth!.email;
-
-                profile.add({
-                  'id': auth!.uid,
-                  'name': name,
-                  'phone': phone,
-                  'addres': addres,
-                  'email': email,
-                });
-                print('profile belum siap');
               }
             }
             return SafeArea(
@@ -77,7 +63,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       height: getProportionateScreenWidth(30),
                       width: SizeConfig.screenWidth,
                     ),
-                    ProfilePic(),
+                    const ProfilePic(),
                     SizedBox(
                       height: getProportionateScreenWidth(30),
                       width: SizeConfig.screenWidth,
@@ -89,21 +75,21 @@ class _ProfilePageState extends State<ProfilePage> {
                         title: 'Name',
                         pesan: 'Harap masukkan nama anda sesuai data diri anda',
                         pathname: 'name',
-                        icons: Icon(Icons.account_circle_rounded)),
+                        icons: const Icon(Icons.account_circle_rounded)),
                     CardMenuProfile(
                         id: id,
                         trail: true,
                         value: phone,
-                        pathname: 'phone',
+                        pathname: 'phoneNumber',
                         title: 'Telepon',
-                        icons: Icon(Icons.call)),
+                        icons: const Icon(Icons.call)),
                     CardMenuProfile(
                       id: id,
                       trail: true,
-                      value: addres,
-                      pathname: 'addres',
+                      value: address,
+                      pathname: 'address',
                       title: 'Alamat',
-                      icons: Icon(Icons.location_on_rounded),
+                      icons: const Icon(Icons.location_on_rounded),
                     ),
                     CardMenuProfile(
                       id: id,
@@ -111,7 +97,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       value: email,
                       pathname: 'email',
                       title: 'E-mail',
-                      icons: Icon(Icons.mail),
+                      icons: const Icon(Icons.mail),
                     )
                   ],
                 ),
@@ -147,6 +133,7 @@ class _CardMenuProfileState extends State<CardMenuProfile> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   final _formKey = GlobalKey<FormState>();
   final authC = Get.put(AuthManage());
+  bool isAdress = false;
   String? valuePath;
 
   final List<String?> errors = [];
@@ -198,75 +185,195 @@ class _CardMenuProfileState extends State<CardMenuProfile> {
               ),
               trailing: widget.trail == true
                   ? IconButton(
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.edit,
                         color: kPrimaryColor,
                       ),
-                      onPressed: () {
-                        Get.defaultDialog(
-                            title: widget.title,
-                            content: Column(
-                              children: [
-                                Form(
-                                  key: _formKey,
-                                  child: Column(children: [
-                                    TextFormField(
-                                      keyboardType: widget.pathname == 'phone'
-                                          ? TextInputType.number
-                                          : widget.pathname == 'name'
-                                              ? TextInputType.name
-                                              : TextInputType.text,
-                                      initialValue: widget.value,
-                                      onSaved: (newValue) =>
-                                          valuePath = newValue,
-                                      onChanged: (value) {
-                                        if (value.isNotEmpty) {
-                                          removeError(error: kUpdateData);
-                                        }
-                                        return;
-                                      },
-                                      validator: ((value) {
-                                        if (value!.isEmpty) {
-                                          addError(error: kUpdateData);
-                                          setState(() {});
-                                          return "";
-                                        }
-                                      }),
-                                      decoration: InputDecoration(
-                                        border: null,
-                                        hintText: 'data tidak boleh kosong',
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 5,
-                                    )
-                                  ]),
-                                ),
-                                FormError(errors: errors),
-                              ],
-                            ),
-                            textCancel: 'Batal',
-                            onCancel: () {},
-                            buttonColor: kPrimaryColor,
-                            confirmTextColor: kWhite,
-                            cancelTextColor: kPrimaryColor,
-                            textConfirm: 'Selesai',
-                            onConfirm: () {
-                              if (_formKey.currentState!.validate()) {
-                                _formKey.currentState!.save();
-                                KeyboardUtil.hideKeyboard(context);
-                                authC.updateProfile(
-                                    widget.id.toString(),
-                                    widget.pathname.toString(),
-                                    valuePath.toString());
-                                Get.back();
-                              }
-                            });
-                      },
+                      onPressed: (widget.pathname == 'address')
+                          ? () {
+                              setState(() {
+                                isAdress = !isAdress;
+                                print(isAdress);
+                              });
+                            }
+                          : () {
+                              setState(() {
+                                onChange();
+                              });
+                            },
                     )
                   : null),
         ),
+        if (isAdress == true)
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
+            width: SizeConfig.screenWidth,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                ElevatedButton(
+                    style: ElevatedButton.styleFrom(primary: kPrimaryColor),
+                    onPressed: () async {
+                      bool serviceEnabled;
+                      LocationPermission permission;
+
+                      serviceEnabled =
+                          await Geolocator.isLocationServiceEnabled();
+                      if (!serviceEnabled) {
+                        return Future.error('Location services are disabled');
+                      }
+
+                      permission = await Geolocator.checkPermission();
+                      if (permission == LocationPermission.denied) {
+                        permission = await Geolocator.requestPermission();
+                        if (permission == LocationPermission.denied) {
+                          return Future.error(
+                              'Location permissions are denied');
+                        }
+                      }
+
+                      if (permission == LocationPermission.deniedForever) {
+                        return Future.error(
+                            'Location permissions are permanently denied, we cannot request permissions.');
+                      }
+
+                      Position position = await Geolocator.getCurrentPosition(
+                          desiredAccuracy: LocationAccuracy.high);
+
+                      try {
+                        List<Placemark> placemark =
+                            await placemarkFromCoordinates(
+                                position.latitude, position.longitude);
+                        //! pilih file location
+                        Placemark p = placemark[2];
+                        String valueplace = p.street.toString() +
+                            ', ' +
+                            p.locality.toString() +
+                            ', ' +
+                            p.subLocality.toString() +
+                            ', ' +
+                            p.subAdministrativeArea.toString();
+                        setState(() {
+                          authC.updateProfile(
+                              widget.id.toString(), 'address', valueplace);
+                        });
+                      } catch (e) {
+                        print(e);
+                      }
+
+                      setState(() {
+                        isAdress = !isAdress;
+                      });
+                    },
+                    child: const Text('Isi Otomatis')),
+                ElevatedButton(
+                    style: ElevatedButton.styleFrom(primary: kPrimaryColor),
+                    onPressed: () {
+                      setState(() {
+                        onChange();
+                      });
+                      isAdress = !isAdress;
+                    },
+                    child: const Text('Isi Lokasi')),
+              ],
+            ),
+          )
       ],
     );
+  }
+
+  void onChange() {
+    Get.defaultDialog(
+        title: widget.title,
+        content: Column(
+          children: [
+            Form(
+              key: _formKey,
+              child: Column(children: [
+                TextFormField(
+                  keyboardType: widget.pathname == 'phone'
+                      ? TextInputType.number
+                      : widget.pathname == 'name'
+                          ? TextInputType.name
+                          : TextInputType.text,
+                  initialValue: widget.value,
+                  onSaved: (newValue) => valuePath = newValue,
+                  onChanged: (value) {
+                    if (value.isNotEmpty) {}
+                    return;
+                  },
+                  validator: ((value) {
+                    if (value!.isEmpty) {
+                      return "";
+                    }
+                  }),
+                  decoration: const InputDecoration(
+                    border: null,
+                    hintText: 'data tidak boleh kosong',
+                  ),
+                ),
+                const SizedBox(
+                  height: 5,
+                )
+              ]),
+            ),
+            FormError(errors: errors),
+          ],
+        ),
+        textCancel: 'Batal',
+        onCancel: () {},
+        buttonColor: kPrimaryColor,
+        confirmTextColor: kWhite,
+        cancelTextColor: kPrimaryColor,
+        textConfirm: 'Selesai',
+        onConfirm: () {
+          if (_formKey.currentState!.validate()) {
+            _formKey.currentState!.save();
+            KeyboardUtil.hideKeyboard(context);
+            authC.updateProfile(widget.id.toString(),
+                widget.pathname.toString(), valuePath.toString());
+            Get.back();
+          }
+        });
+  }
+}
+
+class GetIzin {
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled don't continue
+      // accessing the position and request users of the
+      // App to enable the location services.
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied, next time you could try
+        // requesting permissions again (this is also where
+        // Android's shouldShowRequestPermissionRationale
+        // returned true. According to Android guidelines
+        // your App should show an explanatory UI now.
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    // When we reach here, permissions are granted and we can
+    // continue accessing the position of the device.
+    return await Geolocator.getCurrentPosition();
   }
 }

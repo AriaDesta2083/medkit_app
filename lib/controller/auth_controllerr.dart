@@ -116,11 +116,14 @@ class AuthControllerr extends GetxController {
   Future<void> login() async {
     try {
       // Ini untuk handle kebocoran data user sebelum login
-      await _googleSignIn.signOut();
 
       // Ini digunakan untuk mendapatkan google account
-      await _googleSignIn.signIn().then((value) => _currentUser = value);
+      GoogleAuthProvider googleProvider = GoogleAuthProvider();
 
+      googleProvider
+          .addScope('https://www.googleapis.com/auth/contacts.readonly');
+
+      await _googleSignIn.signIn().then((value) => _currentUser = value);
       // ini untuk mengecek status login user
       final isSignIn = await _googleSignIn.isSignedIn();
 
@@ -163,6 +166,8 @@ class AuthControllerr extends GetxController {
             "email": _currentUser!.email,
             "photoUrl": _currentUser!.photoUrl ?? "noimage",
             "status": "",
+            "phoneNumber": "",
+            "address": "",
             "creationTime":
                 userCredential!.user!.metadata.creationTime!.toIso8601String(),
             "lastSignInTime": userCredential!.user!.metadata.lastSignInTime!

@@ -37,6 +37,10 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+
+
+
 // class MyApp extends StatelessWidget {
 //   final authC = Get.put(AuthControl(), permanent: true);
 //   // This widget is the root of your application.

@@ -33,7 +33,9 @@ dependencies:
   file_picker: ^4.6.1
   firebase_auth: ^3.0.2
   firebase_core: ^1.4.0
+  geolocator: ^9.0.0
   firebase_storage: ^10.2.18
+  geocoding: ^2.0.4
   flutter:
     sdk: flutter
   flutter_localizations:

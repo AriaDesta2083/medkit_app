@@ -28,7 +28,7 @@ ImageLoadingBuilder loadingCircular =
     ),
   );
 };
-List<BoxShadow> shadowBOX = [
+List<BoxShadow> shadowBOX = const [
   BoxShadow(
     color: Color.fromARGB(87, 158, 158, 158),
     spreadRadius: 5,
@@ -36,7 +36,7 @@ List<BoxShadow> shadowBOX = [
     offset: Offset(0, 3), // changes position of shadow
   )
 ];
-List<BoxShadow> shadowBOXtop = [
+List<BoxShadow> shadowBOXtop = const [
   BoxShadow(
       color: Color.fromARGB(128, 158, 158, 158),
       blurRadius: 5,

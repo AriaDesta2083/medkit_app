@@ -122,3 +122,21 @@ class CPemesanan extends GetxController {
         .catchError((error) => print("Failed to delete: $error"));
   }
 }
+
+class cKonsul extends GetxController {
+  RxBool isBuy = false.obs;
+  Rx<DateTime> datetime = DateTime.now().obs;
+
+  void onBuy(DateTime time) {
+    isBuy.value = true;
+    datetime.value = time;
+  }
+
+  @override
+  void onInit() {
+    if (DateTime.now() == datetime.value) {
+      isBuy.value = false;
+    }
+    super.onInit();
+  }
+}

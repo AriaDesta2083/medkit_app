@@ -47,8 +47,7 @@ class CompletePesanForm extends StatefulWidget {
 class _CompletePesanFormState extends State<CompletePesanForm> {
   final auth = FirebaseAuth.instance.currentUser;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
-  CollectionReference profile =
-      FirebaseFirestore.instance.collection('profile');
+  CollectionReference profile = FirebaseFirestore.instance.collection('users');
   final _formKey = GlobalKey<FormState>();
   final List<String?> errors = [];
   final cpayment = Get.put(CPayment());
@@ -90,7 +89,7 @@ class _CompletePesanFormState extends State<CompletePesanForm> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-        stream: profile.where('id', isEqualTo: auth!.uid).snapshots(),
+        stream: profile.where('email', isEqualTo: auth!.email).snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             var myData = snapshot.data!.docs;
@@ -98,23 +97,10 @@ class _CompletePesanFormState extends State<CompletePesanForm> {
               for (var i = 0; i < myData.length; i++) {
                 id = myData[i].id;
                 name = myData[i]['name'];
-                phoneNumber = myData[i]['phone'];
-                address = myData[i]['addres'];
+                phoneNumber = myData[i]['phoneNumber'].toString();
+                address = myData[i]['address'].toString();
                 email = myData[i]['email'];
               }
-            } else if (myData.isEmpty) {
-              name = auth!.displayName;
-              phoneNumber = auth!.phoneNumber;
-              address = null;
-              email = auth!.email;
-              profile.add({
-                'id': auth!.uid,
-                'name': name,
-                'phone': phoneNumber,
-                'addres': address,
-                'email': email,
-              });
-              // print('profile belum siap');
             }
           }
           return Form(
@@ -236,9 +222,9 @@ class _CompletePesanFormState extends State<CompletePesanForm> {
                         cPesan.name.value = name.toString();
                         setState(() {
                           cPesan.onCekPesan();
-                          profile.doc(id).update({
+                          profile.doc(auth!.email).update({
                             'name': name,
-                            'phone': phoneNumber,
+                            'phoneNumber': phoneNumber,
                             'address': address,
                           });
                         });

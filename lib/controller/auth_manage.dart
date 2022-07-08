@@ -2,8 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 
 class AuthManage extends GetxController {
-  CollectionReference profile =
-      FirebaseFirestore.instance.collection('profile');
+  CollectionReference profile = FirebaseFirestore.instance.collection('users');
   CollectionReference imgprofile =
       FirebaseFirestore.instance.collection('imgprofile');
 

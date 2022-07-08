@@ -63,8 +63,9 @@ class DetailActivity extends StatelessWidget {
                         softWrap: true,
                       ),
                       title: Text(product.kode.toString()),
-                      subtitle: Text(DateFormat('EEEE, dd MMMM y , H : m', 'id')
-                          .format(product.datecreate.toDate())),
+                      subtitle: Text(
+                          DateFormat('EEEE, dd MMMM y , HH : mm', 'id')
+                              .format(product.datecreate.toDate())),
                     ),
                     SizedBox(
                       height: getProportionateScreenHeight(10),
