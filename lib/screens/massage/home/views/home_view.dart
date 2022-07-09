@@ -4,6 +4,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:medkit_app/components/coustom_bottom_nav_bar.dart';
 import 'package:medkit_app/controller/auth_controllerr.dart';
+import 'package:medkit_app/controller/auth_services.dart';
+import 'package:medkit_app/controller/get_controll.dart';
 import 'package:medkit_app/enums.dart';
 import 'package:medkit_app/item_constant.dart';
 import 'package:medkit_app/screens/doctor/doctor_screen.dart';
@@ -13,12 +15,14 @@ import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
   static String routeName = "/message";
-
-  final authC = Get.put(AuthControllerr());
+  final authC = Get.put(AuthController());
+  final authCC = Get.put(AuthControllerr());
+  final login = Get.put(cLogin()).isLogin;
   @override
   final controller = Get.put(HomeController());
   @override
   Widget build(BuildContext context) {
+    print(login.value);
     return Scaffold(
       body: Column(
         children: [
@@ -88,7 +92,9 @@ class HomeView extends GetView<HomeController> {
           ),
           Expanded(
             child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-              stream: controller.chatsStream(authC.user.value.email.toString()),
+              stream: (login.value.toString() == 'google')
+                  ? controller.chatsStream(authCC.user.value.email.toString())
+                  : controller.chatsStream(authC.user.value.email.toString()),
               builder: (context, snapshot1) {
                 if (snapshot1.connectionState == ConnectionState.active) {
                   var listDocsChats = snapshot1.data!.docs;
@@ -113,7 +119,9 @@ class HomeView extends GetView<HomeController> {
                                     ),
                                     onTap: () => controller.goToChatRoom(
                                       "${listDocsChats[index].id}",
-                                      authC.user.value.email!.toString(),
+                                      (login.value.toString() == 'google')
+                                          ? authCC.user.value.email!.toString()
+                                          : authC.user.value.email!.toString(),
                                       listDocsChats[index]["connection"],
                                     ),
                                     leading: CircleAvatar(
@@ -160,7 +168,9 @@ class HomeView extends GetView<HomeController> {
                                     ),
                                     onTap: () => controller.goToChatRoom(
                                       "${listDocsChats[index].id}",
-                                      authC.user.value.email!,
+                                      (login.value.toString() == 'google')
+                                          ? authCC.user.value.email!
+                                          : authC.user.value.email!,
                                       listDocsChats[index]["connection"],
                                     ),
                                     leading: CircleAvatar(
@@ -230,9 +240,18 @@ class HomeView extends GetView<HomeController> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          authC.addNewConnection(
-            'aria.destaaaaa@gmail.com',
-          );
+          print(login.value);
+          if (login.value.toString() == 'google') {
+            authCC.addNewConnection(
+              'buatapaaja00@gmail.com',
+            );
+            print(login.value.toString());
+          } else {
+            authC.addNewConnection(
+              'aria.destaaaaa@gmail.com',
+            );
+            print(login.value.toString());
+          }
         },
         child: const Icon(
           Icons.search,

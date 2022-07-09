@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:medkit_app/components/default_button.dart';
 import 'package:medkit_app/controller/auth_controllerr.dart';
+import 'package:medkit_app/controller/auth_services.dart';
 import 'package:medkit_app/controller/get_controll.dart';
 import 'package:medkit_app/item_constant.dart';
 import 'package:medkit_app/theme.dart';
@@ -20,7 +21,10 @@ class ChatRoomView extends StatefulWidget {
 }
 
 class _ChatRoomViewState extends State<ChatRoomView> {
-  final authC = Get.find<AuthControllerr>();
+  final authC = Get.find<AuthController>();
+  final authCC = Get.find<AuthControllerr>();
+  final login = Get.find<cLogin>().isLogin;
+
   final konsul = Get.put(cKonsul());
 
   final String chat_id = (Get.arguments as Map<String, dynamic>)["chat_id"];
@@ -32,6 +36,9 @@ class _ChatRoomViewState extends State<ChatRoomView> {
   final controller = Get.put(ChatRoomController());
 
   Widget build(BuildContext context) {
+    final isAuth = (login == 'google')
+        ? authCC.user.value.email!
+        : authC.user.value.email!;
     return Container(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
@@ -58,7 +65,6 @@ class _ChatRoomViewState extends State<ChatRoomView> {
                             ConnectionState.active) {
                           var dataFriend = snapFriendUser.data!.data()
                               as Map<String, dynamic>;
-
                           if (dataFriend["photoUrl"] == "noimage") {
                             return ClipRRect(
                               borderRadius: BorderRadius.circular(50),
@@ -179,10 +185,10 @@ class _ChatRoomViewState extends State<ChatRoomView> {
                                   ),
                                   ItemChat(
                                     msg: "${alldata[index]["msg"]}",
-                                    isSender: alldata[index]["pengirim"] ==
-                                            authC.user.value.email!
-                                        ? true
-                                        : false,
+                                    isSender:
+                                        alldata[index]["pengirim"] == isAuth
+                                            ? true
+                                            : false,
                                     time: "${alldata[index]["time"]}",
                                   ),
                                 ],
@@ -192,8 +198,7 @@ class _ChatRoomViewState extends State<ChatRoomView> {
                                   alldata[index - 1]["groupTime"]) {
                                 return ItemChat(
                                   msg: "${alldata[index]["msg"]}",
-                                  isSender: alldata[index]["pengirim"] ==
-                                          authC.user.value.email!
+                                  isSender: alldata[index]["pengirim"] == isAuth
                                       ? true
                                       : false,
                                   time: "${alldata[index]["time"]}",
@@ -209,10 +214,10 @@ class _ChatRoomViewState extends State<ChatRoomView> {
                                     ),
                                     ItemChat(
                                       msg: "${alldata[index]["msg"]}",
-                                      isSender: alldata[index]["pengirim"] ==
-                                              authC.user.value.email!
-                                          ? true
-                                          : false,
+                                      isSender:
+                                          alldata[index]["pengirim"] == isAuth
+                                              ? true
+                                              : false,
                                       time: "${alldata[index]["time"]}",
                                     ),
                                   ],
@@ -261,7 +266,7 @@ class _ChatRoomViewState extends State<ChatRoomView> {
                                   controller: controller.chatC,
                                   focusNode: controller.focusNode,
                                   onEditingComplete: () => controller.newChat(
-                                    authC.user.value.email!,
+                                    isAuth,
                                     Get.arguments as Map<String, dynamic>,
                                     controller.chatC.text,
                                   ),
@@ -309,7 +314,7 @@ class _ChatRoomViewState extends State<ChatRoomView> {
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(100),
                                 onTap: () => controller.newChat(
-                                  authC.user.value.email!,
+                                  isAuth,
                                   Get.arguments as Map<String, dynamic>,
                                   controller.chatC.text,
                                 ),

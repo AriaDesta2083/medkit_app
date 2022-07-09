@@ -81,15 +81,15 @@ class ChatUser {
   int? total_unread;
 
   factory ChatUser.fromJson(Map<String, dynamic> json) => ChatUser(
-        connection: json["connection"],
         chatId: json["chat_id"],
+        connection: json["connection"],
         lastTime: json["lastTime"],
         total_unread: json["total_unread"],
       );
 
   Map<String, dynamic> toJson() => {
-        "connection": connection,
         "chat_id": chatId,
+        "connection": connection,
         "lastTime": lastTime,
         "total_unread": total_unread,
       };

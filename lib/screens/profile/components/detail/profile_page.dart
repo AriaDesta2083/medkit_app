@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
@@ -292,11 +293,14 @@ class _CardMenuProfileState extends State<CardMenuProfile> {
               key: _formKey,
               child: Column(children: [
                 TextFormField(
-                  keyboardType: widget.pathname == 'phone'
+                  keyboardType: widget.pathname == 'phoneNumber'
                       ? TextInputType.number
                       : widget.pathname == 'name'
                           ? TextInputType.name
                           : TextInputType.text,
+                  inputFormatters: (widget.pathname == 'phoneNumber')
+                      ? [FilteringTextInputFormatter.digitsOnly]
+                      : [],
                   initialValue: widget.value,
                   onSaved: (newValue) => valuePath = newValue,
                   onChanged: (value) {

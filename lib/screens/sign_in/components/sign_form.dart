@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:medkit_app/components/custom_surfix_icon.dart';
 import 'package:medkit_app/components/form_error.dart';
 import 'package:medkit_app/controller/auth_services.dart';
+import 'package:medkit_app/controller/get_controll.dart';
 import 'package:medkit_app/helper/keyboard.dart';
 import 'package:medkit_app/item_constant.dart';
 import 'package:medkit_app/screens/login_success/login_success_screen.dart';
@@ -16,6 +17,7 @@ class SignForm extends StatefulWidget {
 
 class _SignFormState extends State<SignForm> {
   final authC = Get.find<AuthController>();
+  final login = Get.find<cLogin>().isLogin;
   final _formKey = GlobalKey<FormState>();
   String? email;
   String? password;
@@ -78,10 +80,10 @@ class _SignFormState extends State<SignForm> {
             press: () {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
-
+                login.value = 'email';
                 //! Controller Login;
-                authC.signin(email!, password!);
                 KeyboardUtil.hideKeyboard(context);
+                authC.signin(email!, password!);
               }
             },
           ),

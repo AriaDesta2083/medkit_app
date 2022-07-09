@@ -140,3 +140,7 @@ class cKonsul extends GetxController {
     super.onInit();
   }
 }
+
+class cLogin extends GetxController {
+  var isLogin = 'default'.obs;
+}

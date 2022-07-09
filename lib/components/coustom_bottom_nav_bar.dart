@@ -6,6 +6,7 @@ import 'package:medkit_app/item_constant.dart';
 import 'package:medkit_app/routes/app_pages.dart';
 import 'package:medkit_app/screens/activity/activity_screen.dart';
 import 'package:medkit_app/screens/home/home_screen.dart';
+import 'package:medkit_app/screens/massage/chat_room/views/chat_room_view.dart';
 import 'package:medkit_app/screens/massage/home/views/home_view.dart';
 import 'package:medkit_app/screens/profile/profile_screen.dart';
 

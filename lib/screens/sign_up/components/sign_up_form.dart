@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:medkit_app/components/custom_surfix_icon.dart';
 import 'package:medkit_app/components/default_button.dart';
@@ -16,9 +17,10 @@ class SignUpForm extends StatefulWidget {
 class _SignUpFormState extends State<SignUpForm> {
   final authC = Get.find<AuthController>();
   final _formKey = GlobalKey<FormState>();
+  String? name;
   String? email;
   String? password;
-  String? conform_password;
+  String? conformpassword;
   bool remember = false;
   final List<String?> errors = [];
 
@@ -44,6 +46,8 @@ class _SignUpFormState extends State<SignUpForm> {
       key: _formKey,
       child: Column(
         children: [
+          buildNameFormField(),
+          SizedBox(height: getProportionateScreenHeight(30)),
           buildEmailFormField(),
           SizedBox(height: getProportionateScreenHeight(30)),
           buildPasswordFormField(),
@@ -57,7 +61,7 @@ class _SignUpFormState extends State<SignUpForm> {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
                 // if all are valid then go to success screen
-                authC.signup(email!, conform_password!);
+                authC.signup(name!, email!, conformpassword!);
               }
             },
           ),
@@ -66,17 +70,46 @@ class _SignUpFormState extends State<SignUpForm> {
     );
   }
 
+  TextFormField buildNameFormField() {
+    return TextFormField(
+      onSaved: (newValue) => name = newValue,
+      keyboardType: TextInputType.name,
+      inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[a-zA-Z ]'))],
+      onChanged: (value) {
+        if (value.isNotEmpty) {
+          removeError(error: kNamelNullError);
+        }
+        return null;
+      },
+      validator: (value) {
+        if (value!.isEmpty) {
+          addError(error: kNamelNullError);
+          return "";
+        }
+        return null;
+      },
+      decoration: InputDecoration(
+        labelText: "Nama Lengkap",
+        hintText: "Enter your name",
+        // If  you are using latest version of flutter then lable text and hint text shown like this
+        // if you r using flutter less then 1.20.* then maybe this is not working properly
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/User.svg"),
+      ),
+    );
+  }
+
   TextFormField buildConformPassFormField() {
     return TextFormField(
       obscureText: true,
-      onSaved: (newValue) => conform_password = newValue,
+      onSaved: (newValue) => conformpassword = newValue,
       onChanged: (value) {
         if (value.isNotEmpty) {
           removeError(error: kPassNullError);
-        } else if (value.isNotEmpty && password == conform_password) {
+        } else if (value.isNotEmpty && password == conformpassword) {
           removeError(error: kMatchPassError);
         }
-        conform_password = value;
+        conformpassword = value;
       },
       validator: (value) {
         if (value!.isEmpty) {

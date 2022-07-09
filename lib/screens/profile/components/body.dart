@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:medkit_app/controller/auth_controllerr.dart';
 import 'package:medkit_app/controller/auth_services.dart';
+import 'package:medkit_app/controller/get_controll.dart';
 import 'package:medkit_app/controller/wrapper.dart';
 import 'package:medkit_app/screens/profile/components/detail/profile_page.dart';
 
@@ -14,6 +16,8 @@ class Body extends StatefulWidget {
 
 class _BodyState extends State<Body> {
   final authC = Get.find<AuthController>();
+  final authCC = Get.put(AuthControllerr());
+  final login = Get.put(cLogin()).isLogin;
 
   @override
   Widget build(BuildContext context) {
@@ -47,8 +51,12 @@ class _BodyState extends State<Body> {
             ProfileMenu(
               text: "Log Out",
               icon: "assets/icons/Log out.svg",
-              press: () {
-                authC.signout();
+              press: () async {
+                if (login.value.toString() == 'google') {
+                  await authCC.logout();
+                } else {
+                  authC.signout();
+                }
                 Get.offAll(Wrapper());
               },
             ),

@@ -6,14 +6,14 @@ import 'package:get/get.dart';
 // import 'package:get_storage/get_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:medkit_app/controller/auth_services.dart';
+import 'package:medkit_app/controller/get_controll.dart';
 import 'package:medkit_app/controller/wrapper.dart';
 import 'package:medkit_app/data/users_model.dart';
-import 'package:medkit_app/routes/app_pages.dart';
 
 class AuthControllerr extends GetxController {
-  // var isSkipIntro = false.obs;
   var isAuth = false.obs;
   FirebaseAuth auth = Get.put(AuthController()).auth;
+  final loginn = Get.put(cLogin()).isLogin;
   Stream<User?> get streamAuthStatus => auth.authStateChanges();
 
   final GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -25,6 +25,8 @@ class AuthControllerr extends GetxController {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   Future<void> firstInitialized() async {
+    loginn.value = 'google';
+    print(loginn.value.toString());
     await autoLogin().then((value) {
       if (value) {
         isAuth.value = true;
@@ -42,6 +44,8 @@ class AuthControllerr extends GetxController {
   // }
 
   Future<bool> autoLogin() async {
+    loginn.value = 'google';
+
     // kita akan mengubah isAuth => true => autoLogin
     try {
       final isSignIn = await _googleSignIn.isSignedIn();
@@ -114,6 +118,8 @@ class AuthControllerr extends GetxController {
   }
 
   Future<void> login() async {
+    loginn.value = 'google';
+
     try {
       // Ini untuk handle kebocoran data user sebelum login
 
@@ -237,79 +243,79 @@ class AuthControllerr extends GetxController {
 
   // PROFILE
 
-  void changeProfile(String name, String status) {
-    String date = DateTime.now().toIso8601String();
+  // void changeProfile(String name, String status) {
+  //   String date = DateTime.now().toIso8601String();
 
-    // Update firebase
-    CollectionReference users = firestore.collection('users');
+  //   // Update firebase
+  //   CollectionReference users = firestore.collection('users');
 
-    users.doc(_currentUser!.email).update({
-      "name": name,
-      "keyName": name.substring(0, 1).toUpperCase(),
-      "status": status,
-      "lastSignInTime":
-          userCredential!.user!.metadata.lastSignInTime!.toIso8601String(),
-      "updatedTime": date,
-    });
+  //   users.doc(_currentUser!.email).update({
+  //     "name": name,
+  //     "keyName": name.substring(0, 1).toUpperCase(),
+  //     "status": status,
+  //     "lastSignInTime":
+  //         userCredential!.user!.metadata.lastSignInTime!.toIso8601String(),
+  //     "updatedTime": date,
+  //   });
 
-    // Update model
-    user.update((user) {
-      user!.name = name;
-      user.keyName = name.substring(0, 1).toUpperCase();
-      user.status = status;
-      user.lastSignInTime =
-          userCredential!.user!.metadata.lastSignInTime!.toIso8601String();
-      user.updatedTime = date;
-    });
+  //   // Update model
+  //   user.update((user) {
+  //     user!.name = name;
+  //     user.keyName = name.substring(0, 1).toUpperCase();
+  //     user.status = status;
+  //     user.lastSignInTime =
+  //         userCredential!.user!.metadata.lastSignInTime!.toIso8601String();
+  //     user.updatedTime = date;
+  //   });
 
-    user.refresh();
-    Get.defaultDialog(title: "Success", middleText: "Change Profile success");
-  }
+  //   user.refresh();
+  //   Get.defaultDialog(title: "Success", middleText: "Change Profile success");
+  // }
 
-  void updateStatus(String status) {
-    String date = DateTime.now().toIso8601String();
-    // Update firebase
-    CollectionReference users = firestore.collection('users');
+  // void updateStatus(String status) {
+  //   String date = DateTime.now().toIso8601String();
+  //   // Update firebase
+  //   CollectionReference users = firestore.collection('users');
 
-    users.doc(_currentUser!.email).update({
-      "status": status,
-      "lastSignInTime":
-          userCredential!.user!.metadata.lastSignInTime!.toIso8601String(),
-      "updatedTime": date,
-    });
+  //   users.doc(_currentUser!.email).update({
+  //     "status": status,
+  //     "lastSignInTime":
+  //         userCredential!.user!.metadata.lastSignInTime!.toIso8601String(),
+  //     "updatedTime": date,
+  //   });
 
-    // Update model
-    user.update((user) {
-      user!.status = status;
-      user.lastSignInTime =
-          userCredential!.user!.metadata.lastSignInTime!.toIso8601String();
-      user.updatedTime = date;
-    });
+  //   // Update model
+  //   user.update((user) {
+  //     user!.status = status;
+  //     user.lastSignInTime =
+  //         userCredential!.user!.metadata.lastSignInTime!.toIso8601String();
+  //     user.updatedTime = date;
+  //   });
 
-    user.refresh();
-    Get.defaultDialog(title: "Success", middleText: "Update status success");
-  }
+  //   user.refresh();
+  //   Get.defaultDialog(title: "Success", middleText: "Update status success");
+  // }
 
-  void updatePhotoUrl(String url) async {
-    String date = DateTime.now().toIso8601String();
-    // Update firebase
-    CollectionReference users = firestore.collection('users');
+  // void updatePhotoUrl(String url) async {
+  //   String date = DateTime.now().toIso8601String();
+  //   // Update firebase
+  //   CollectionReference users = firestore.collection('users');
 
-    await users.doc(_currentUser!.email).update({
-      "photoUrl": url,
-      "updatedTime": date,
-    });
+  //   await users.doc(_currentUser!.email).update({
+  //     "photoUrl": url,
+  //     "updatedTime": date,
+  //   });
 
-    // Update model
-    user.update((user) {
-      user!.photoUrl = url;
-      user.updatedTime = date;
-    });
+  //   // Update model
+  //   user.update((user) {
+  //     user!.photoUrl = url;
+  //     user.updatedTime = date;
+  //   });
 
-    user.refresh();
-    Get.defaultDialog(
-        title: "Success", middleText: "Change photo profile success");
-  }
+  //   user.refresh();
+  //   Get.defaultDialog(
+  //       title: "Success", middleText: "Change photo profile success");
+  // }
   // SEARCH
 
   void addNewConnection(String friendEmail) async {
@@ -381,9 +387,9 @@ class AuthControllerr extends GetxController {
         final listChats =
             await users.doc(_currentUser!.email).collection("chats").get();
 
-        if (listChats.docs.length != 0) {
-          List<ChatUser> dataListChats = List<ChatUser>.empty();
-          listChats.docs.forEach((element) {
+        if (listChats.docs.isNotEmpty) {
+          List<ChatUser> dataListChats = List<ChatUser>.empty(growable: true);
+          for (var element in listChats.docs) {
             var dataDocChat = element.data();
             var dataDocChatId = element.id;
             dataListChats.add(ChatUser(
@@ -392,7 +398,7 @@ class AuthControllerr extends GetxController {
               lastTime: dataDocChat["lastTime"],
               total_unread: dataDocChat["total_unread"],
             ));
-          });
+          }
           user.update((user) {
             user!.chats = dataListChats;
           });
@@ -429,9 +435,9 @@ class AuthControllerr extends GetxController {
         final listChats =
             await users.doc(_currentUser!.email).collection("chats").get();
 
-        if (listChats.docs.length != 0) {
-          List<ChatUser> dataListChats = List<ChatUser>.empty();
-          listChats.docs.forEach((element) {
+        if (listChats.docs.isNotEmpty) {
+          List<ChatUser> dataListChats = List<ChatUser>.empty(growable: true);
+          for (var element in listChats.docs) {
             var dataDocChat = element.data();
             var dataDocChatId = element.id;
             dataListChats.add(ChatUser(
@@ -440,7 +446,7 @@ class AuthControllerr extends GetxController {
               lastTime: dataDocChat["lastTime"],
               total_unread: dataDocChat["total_unread"],
             ));
-          });
+          }
           user.update((user) {
             user!.chats = dataListChats;
           });
