@@ -3,8 +3,8 @@ import 'package:get/get.dart';
 import 'package:medkit_app/components/custom_app_bar.dart';
 import 'package:medkit_app/components/default_button.dart';
 import 'package:medkit_app/controller/get_controll.dart';
+import 'package:medkit_app/controller/get_prouct.dart';
 import 'package:medkit_app/item_constant.dart';
-import 'package:medkit_app/models/Product.dart';
 import 'package:medkit_app/screens/pesan/pesan_screen.dart';
 import 'package:medkit_app/screens/psikotest/components/details/body.dart';
 
@@ -19,7 +19,7 @@ class DetailPsikoScreen extends StatelessWidget {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(AppBar().preferredSize.height),
-        child: CustomAppBar(rating: agrs.product.rating),
+        child: CustomAppBar(rating: agrs.product.rate),
       ),
       body: Body(product: agrs.product),
       bottomNavigationBar: Container(
@@ -30,12 +30,14 @@ class DetailPsikoScreen extends StatelessWidget {
             text: "PESAN",
             press: () {
               //! change data
-              cPesan.id.value = agrs.product.id.toInt();
+              cPesan.id.value = agrs.product.id!;
               cPesan.title.value = agrs.product.title.toString();
-              cPesan.product.value = 'Psikologi Test';
+              cPesan.product.value = agrs.product.product.toString();
+              cPesan.jamOP.value = agrs.product.jamOp;
+
               //* memilih pesanan
               // cPesan.price.value = agrs.product.price[0].toInt();
-              cPesan.imgurl.value = agrs.product.images.toString();
+              cPesan.imgurl.value = agrs.product.photoUrl[0].toString();
               Get.to(() => PesanScreen());
             },
           ),
@@ -46,6 +48,6 @@ class DetailPsikoScreen extends StatelessWidget {
 }
 
 class ProductDetailsArguments {
-  final PsikoList product;
+  final ProductModels product;
   ProductDetailsArguments({required this.product});
 }

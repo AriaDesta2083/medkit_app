@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:medkit_app/components/custom_app_bar.dart';
 import 'package:medkit_app/components/default_button.dart';
 import 'package:medkit_app/controller/get_controll.dart';
+import 'package:medkit_app/controller/get_prouct.dart';
 import 'package:medkit_app/item_constant.dart';
 import 'package:medkit_app/models/Product.dart';
 import 'package:medkit_app/screens/mcu/components/details/body.dart';
@@ -19,7 +20,7 @@ class DetailMCUScreen extends StatelessWidget {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(AppBar().preferredSize.height),
-        child: CustomAppBar(rating: agrs.product.rating),
+        child: CustomAppBar(rating: agrs.product.rate),
       ),
       body: Body(product: agrs.product),
       bottomNavigationBar: Container(
@@ -30,11 +31,12 @@ class DetailMCUScreen extends StatelessWidget {
             text: "PESAN",
             press: () {
               //! change data
-              cPesan.id.value = agrs.product.id.toInt();
-              cPesan.product.value = 'Medical Check Up';
+              cPesan.jamOP.value = agrs.product.jamOp;
+              cPesan.id.value = agrs.product.id.toString();
+              cPesan.product.value = agrs.product.product.toString();
+              cPesan.price.value = agrs.product.price[0];
               cPesan.title.value = agrs.product.title.toString();
-              cPesan.price.value = agrs.product.price.toInt();
-              cPesan.imgurl.value = agrs.product.images.toString();
+              cPesan.imgurl.value = agrs.product.photoUrl[0].toString();
               Get.to(() => PesanScreen());
             },
           ),
@@ -45,7 +47,7 @@ class DetailMCUScreen extends StatelessWidget {
 }
 
 class ProductDetailsArguments {
-  final MCUList product;
+  final ProductModels product;
 
   ProductDetailsArguments({required this.product});
 }

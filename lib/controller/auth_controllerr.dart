@@ -171,7 +171,7 @@ class AuthControllerr extends GetxController {
             "keyName": _currentUser!.displayName!.substring(0, 1).toUpperCase(),
             "email": _currentUser!.email,
             "photoUrl": _currentUser!.photoUrl ?? "noimage",
-            "status": "",
+            "status": "customer",
             "phoneNumber": "",
             "address": "",
             "creationTime":
@@ -238,6 +238,7 @@ class AuthControllerr extends GetxController {
   Future<void> logout() async {
     await _googleSignIn.disconnect();
     await _googleSignIn.signOut();
+
     Get.offAllNamed(Wrapper.routeName);
   }
 

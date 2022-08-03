@@ -51,12 +51,12 @@ class _BodyState extends State<Body> {
             ProfileMenu(
               text: "Log Out",
               icon: "assets/icons/Log out.svg",
-              press: () async {
-                if (login.value.toString() == 'google') {
-                  await authCC.logout();
-                } else {
-                  authC.signout();
+              press: () {
+                Get.offAll(Wrapper());
+                if (login.value == 'google') {
+                  authCC.logout();
                 }
+                authC.signout();
                 Get.offAll(Wrapper());
               },
             ),

@@ -299,7 +299,10 @@ class _CardMenuProfileState extends State<CardMenuProfile> {
                           ? TextInputType.name
                           : TextInputType.text,
                   inputFormatters: (widget.pathname == 'phoneNumber')
-                      ? [FilteringTextInputFormatter.digitsOnly]
+                      ? [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(13)
+                        ]
                       : [],
                   initialValue: widget.value,
                   onSaved: (newValue) => valuePath = newValue,

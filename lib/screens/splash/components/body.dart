@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:medkit_app/components/default_button.dart';
 import 'package:medkit_app/controller/wrapper.dart';
 import 'package:medkit_app/item_constant.dart';
-import 'package:medkit_app/screens/sign_in/sign_in_screen.dart';
 import 'package:medkit_app/size_config.dart';
 
 // This is the best practice
@@ -20,16 +19,17 @@ class _BodyState extends State<Body> {
   int currentPage = 0;
   List<Map<String, String>> splashData = [
     {
-      "text": "Welcome to Medkit, Let’s shop!",
+      "text": "Welcome to Medkit, Let’s check your health!",
       "image": "assets/images/splash_1.png"
     },
     {
       "text":
-          "We help people conect with store \naround United State of America",
+          "We help people connect with the \nmedical store Citra Husada Hospital Jember",
       "image": "assets/images/splash_2.png"
     },
     {
-      "text": "We show the easy way to shop. \nJust stay at home with us",
+      "text":
+          "We show you an easy way to make a \nmedical appointment. Just stay at home with us",
       "image": "assets/images/splash_3.png"
     },
   ];

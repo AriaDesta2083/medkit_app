@@ -30,12 +30,13 @@ class WrapperChat extends StatelessWidget {
   static String routeName = "/wrapperchat";
   final authC = Get.put(AuthController(), permanent: true);
   final authCC = Get.put(AuthControllerr(), permanent: true);
-  final login = Get.put(cLogin()).isLogin;
+  final login = Get.put(cLogin());
   @override
   Widget build(BuildContext context) {
+    print(login.isLogin.value);
     return Builder(builder: (context) {
       return FutureBuilder(
-        future: (login.value.toString() == 'google')
+        future: (login.isLogin.value.toString() == 'google')
             ? authCC.firstInitialized()
             : authC.firstInitialized(),
         builder: (context, snapshot) => HomeView(),

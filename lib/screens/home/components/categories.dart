@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:medkit_app/controller/auth_controllerr.dart';
+import 'package:medkit_app/controller/auth_services.dart';
+import 'package:medkit_app/controller/get_controll.dart';
 import 'package:medkit_app/screens/doctor/doctor_screen.dart';
 import 'package:medkit_app/screens/icu/icu_screen.dart';
 import 'package:medkit_app/screens/mcu/mcu_screen.dart';
@@ -12,6 +15,7 @@ import '../../../size_config.dart';
 class Categories extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final isLogin = Get.put(cLogin());
     List<Map<String, dynamic>> categories = [
       {
         "icon": "assets/icons/ic_doctor.svg",
@@ -51,7 +55,10 @@ class Categories extends StatelessWidget {
           (index) => CategoryCard(
             icon: categories[index]["icon"],
             text: categories[index]["text"],
-            press: () => Get.to(categories[index]["press"]),
+            press: () {
+              print(isLogin.isLogin.value);
+              Get.to(categories[index]["press"]);
+            },
           ),
         ),
       ),

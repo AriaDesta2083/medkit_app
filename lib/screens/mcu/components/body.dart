@@ -1,42 +1,69 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:medkit_app/controller/get_prouct.dart';
 import 'package:medkit_app/item_constant.dart';
 import 'package:medkit_app/models/Product.dart';
 import 'package:medkit_app/screens/mcu/components/card_item.dart';
 import 'package:medkit_app/size_config.dart';
 
 class Body extends StatelessWidget {
-  const Body({
+  Body({
     Key? key,
   }) : super(key: key);
+  final product = FirebaseFirestore.instance
+      .collection('product')
+      .where('active', isEqualTo: true)
+      .where('product', isEqualTo: 'Medical Check Up')
+      .snapshots();
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-            child: Text(
-              '''Medical checkup mencakup serangkaian wawancara dan pemeriksaan kesehatan. Medical checkup bertujuan untuk mendeteksi secara dini bila ada masalah kesehatan tersembunyi yang belum menunjukkan gejala dan juga menentukan tingkat kebugaran dan kesehatan umum.
-Rumah Sakit Citra Husada menyediakan paket MCU sesuai kebutuhan pasien : ''',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-          ),
-          ...List.generate(
-            listMCU.length,
-            (index) {
-              return Padding(
-                padding:
-                    EdgeInsets.only(bottom: getProportionateScreenHeight(10)),
-                child: CardItem(product: listMCU[index]),
-              ); // here by default width and height is 0
-            },
-          ),
-          SizedBox(
-            height: 10,
-          )
-        ],
-      ),
+    return ListView(
+      children: [
+        SizedBox(
+          height: 10,
+        ),
+        StreamBuilder<QuerySnapshot>(
+            stream: product,
+            builder: (_, snapshot) {
+              if (!snapshot.hasData) {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    color: kPrimaryColor,
+                  ),
+                );
+              } else if (snapshot.data!.docs.isEmpty) {
+                return const Center(
+                  child: Text('Belum Ada Data '),
+                );
+              } else if (snapshot.hasData) {
+                var myItems = snapshot.data!.docs;
+                return Column(
+                    children: myItems
+                        .map(
+                          (item) => CardItem(
+                            product: ProductModels(
+                                datecreate: item['datecreate'].toString(),
+                                id: item.id.toString(),
+                                title: item['title'],
+                                product: item['product'],
+                                deskripsi: item['deskripsi'],
+                                price: item['price'],
+                                categories: item['categories'],
+                                photoUrl: item['photoUrl'],
+                                jamOp: item['jamOp'],
+                                active: item['active'],
+                                rate: item['rate']),
+                          ),
+                        )
+                        .toList());
+              }
+              return Text('data');
+            }),
+        const SizedBox(
+          height: 10,
+        )
+      ],
     );
   }
 }

@@ -17,7 +17,7 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   final authC = Get.find<AuthController>();
   final authCC = Get.put(AuthControllerr());
-  final login = Get.put(cLogin()).isLogin;
+  final login = Get.put(cLogin());
 
   @override
   Widget build(BuildContext context) {
@@ -53,8 +53,9 @@ class _BodyState extends State<Body> {
                         icon: "assets/icons/google-icon.svg",
                         press: () {
                           authCC.login();
-                          login.value = 'google';
-                          setState(() {});
+                          setState(() {
+                            login.onsigingoogle();
+                          });
                         }),
                     SocalCard(
                       icon: "assets/icons/facebook-2.svg",

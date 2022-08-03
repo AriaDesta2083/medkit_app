@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:medkit_app/controller/auth_controllerr.dart';
 import 'package:medkit_app/controller/get_controll.dart';
 import 'package:medkit_app/controller/wrapper.dart';
 import 'package:medkit_app/data/users_model.dart';
@@ -10,7 +11,7 @@ import 'package:medkit_app/screens/sign_in/sign_in_screen.dart';
 class AuthController extends GetxController {
   final FirebaseAuth auth = FirebaseAuth.instance;
   Stream<User?> get streamAuthStatus => auth.authStateChanges();
-  final login = Get.put(cLogin()).isLogin;
+  final login = Get.put(cLogin());
   UserCredential? userCredential;
   var user = UsersModel().obs;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -18,7 +19,7 @@ class AuthController extends GetxController {
   var isAuth = false.obs;
 
   Future<void> firstInitialized() async {
-    login.value = 'email';
+    login.onsigninemail();
     await autoLogin().then((value) {
       if (value) {
         isAuth.value = true;
@@ -27,13 +28,7 @@ class AuthController extends GetxController {
   }
 
   Future<bool> autoLogin() async {
-    login.value = 'email';
-
     // kita akan mengubah isAuth => true => autoLogin
-    print(_currentUser);
-    print(user);
-    print(userCredential);
-
     // masukan data ke firebase...
     CollectionReference users = firestore.collection('users');
 
@@ -82,7 +77,7 @@ class AuthController extends GetxController {
   }
 
   void signin(String email, String pw) async {
-    login.value == 'email';
+    login.onsigninemail();
 
     try {
       await auth
@@ -105,7 +100,7 @@ class AuthController extends GetxController {
             "keyName": _currentUser!.displayName!.substring(0, 1).toUpperCase(),
             "email": _currentUser!.email,
             "photoUrl": "noimage",
-            "status": "",
+            "status": "customer",
             "phoneNumber": "",
             "address": "",
             "creationTime":
@@ -211,6 +206,7 @@ class AuthController extends GetxController {
   void signout() async {
     await auth.signOut();
     await FirebaseAuth.instance.signOut();
+    await FirebaseAuth.instance;
   }
 
   void addNewConnection(String friendEmail) async {

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:medkit_app/routes.dart';
-import 'package:medkit_app/routes/app_pages.dart';
 import 'package:medkit_app/screens/splash/splash_screen.dart';
 import 'package:medkit_app/theme.dart';
 

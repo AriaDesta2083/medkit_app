@@ -142,6 +142,8 @@ class _ProfilePicState extends State<ProfilePic> {
                             await storage.downloadURL(fileName.toString());
                         setState(() {
                           authC.updateImgProfile(id, 'img', myimage.toString());
+                          authC.updateProfile(
+                              auth.email, 'photoUrl', myimage.toString());
                         });
                       },
                       child: Icon(

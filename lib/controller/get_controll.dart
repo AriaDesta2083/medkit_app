@@ -16,7 +16,7 @@ class CPemesanan extends GetxController {
   CollectionReference pesanan =
       FirebaseFirestore.instance.collection('pesanan');
 
-  var id = 0.obs;
+  var id = 'default'.obs;
   var product = 'default'.obs;
   var title = 'default'.obs;
   var price = 0.obs;
@@ -28,9 +28,12 @@ class CPemesanan extends GetxController {
   var uid = 'default'.obs;
   var name = 'default'.obs;
   var kode = 'default'.obs;
+  var jamOP = [].obs;
+  var timepick = 'Pilih Waktu Janji Medis'.obs;
 
   void onReload() {
-    id.value = 0;
+    timepick.value = 'Pilih Waktu Janji Medis';
+    id.value = 'default';
     product.value = 'default';
     title.value = 'default';
     price.value = 0;
@@ -53,7 +56,7 @@ class CPemesanan extends GetxController {
         imgurl.value.toString()[1] +
         status.value.toString().randomItem() +
         payment.value.toString().randomItem() +
-        datepick.value.toString().substring(6).randomItem() +
+        // datepick.value.toString().substring(6).randomItem() +
         // datecreate.value.toString().substring(6).randomItem() +
         uid.value.toString().randomItem() +
         name.value.toString().randomItem();
@@ -85,10 +88,29 @@ class CPemesanan extends GetxController {
         kode.value.toString().toUpperCase());
   }
 
+  Future<bool> cekWaktuPEsanan(String title, date, time) async {
+    final myPesan = await pesanan
+        .where(
+          'title',
+          isEqualTo: title,
+        )
+        .where('datepick', isEqualTo: date)
+        .where('timepick', isEqualTo: time)
+        .get();
+
+    if (myPesan.docs.isNotEmpty) {
+      print('ada data');
+      return true;
+    } else {
+      print('tidak ada data');
+      return false;
+    }
+  }
+
   Future<void> onPemesanan() async {
     await pesanan
         .add({
-          'id': id.toInt(),
+          'id': id.toString(),
           'title': title.toString(),
           'product': product.value.toString(),
           'price': price.toInt(),
@@ -96,6 +118,7 @@ class CPemesanan extends GetxController {
           'imgurl': imgurl.toString(),
           'payment': payment.toString(),
           'status': status.toString(),
+          'timepick': timepick.toString(),
           'datepick': datepick.toString(),
           'datecreate': Timestamp.now(),
           'uid': uid.toString(),
@@ -143,4 +166,15 @@ class cKonsul extends GetxController {
 
 class cLogin extends GetxController {
   var isLogin = 'default'.obs;
+  void onsigninemail() {
+    isLogin.value = 'email';
+  }
+
+  void onsigingoogle() {
+    isLogin.value = 'google';
+  }
+}
+
+class cBayar extends GetxController {
+  var bayar = 'default'.obs;
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:medkit_app/components/default_button.dart';
 import 'package:medkit_app/controller/get_controll.dart';
+import 'package:medkit_app/controller/get_prouct.dart';
+import 'package:medkit_app/controller/storage_services.dart';
 import 'package:medkit_app/item_constant.dart';
 import 'package:medkit_app/models/Product.dart';
 import 'package:medkit_app/rupiah.dart';
@@ -9,7 +11,7 @@ import 'package:medkit_app/screens/pesan/pesan_screen.dart';
 import 'package:medkit_app/size_config.dart';
 
 class Body extends StatefulWidget {
-  final PsikoList product;
+  final ProductModels product;
 
   const Body({Key? key, required this.product}) : super(key: key);
 
@@ -44,7 +46,7 @@ class ProductImages extends StatefulWidget {
     required this.product,
   }) : super(key: key);
 
-  final PsikoList product;
+  final ProductModels product;
 
   @override
   _ProductImagesState createState() => _ProductImagesState();
@@ -52,6 +54,7 @@ class ProductImages extends StatefulWidget {
 
 class _ProductImagesState extends State<ProductImages> {
   int selectedImage = 0;
+  final StorageProduct storage = StorageProduct();
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -63,10 +66,27 @@ class _ProductImagesState extends State<ProductImages> {
             aspectRatio: 1,
             child: Hero(
               tag: widget.product.id.toString(),
-              child: Image.asset(
-                widget.product.images,
-                fit: BoxFit.cover,
-              ),
+              child: FutureBuilder(
+                  future: storage
+                      .downloadURL(widget.product.photoUrl[selectedImage]),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<String> snapshot) {
+                    if (!snapshot.hasData) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          color: kOrange,
+                        ),
+                      );
+                    } else if (snapshot.hasData) {
+                      return Image.network(
+                        snapshot.data!,
+                        fit: BoxFit.cover,
+                      );
+                    }
+                    return const Center(
+                      child: Text('Something Wrong'),
+                    );
+                  }),
             ),
           ),
         ),
@@ -109,7 +129,7 @@ class _ProductImagesState extends State<ProductImages> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(10),
           child: Image.asset(
-            widget.product.images[index],
+            widget.product.photoUrl[index],
             fit: BoxFit.cover,
           ),
         ),
@@ -124,19 +144,19 @@ class ProductDescription extends StatefulWidget {
     required this.product,
   }) : super(key: key);
 
-  final PsikoList product;
+  final ProductModels product;
 
   @override
   State<ProductDescription> createState() => _ProductDescriptionState();
 }
 
 class _ProductDescriptionState extends State<ProductDescription> {
-  int myselected = 0;
+  int? myselected = 0;
   @override
   Widget build(BuildContext context) {
     final cPesan = Get.find<CPemesanan>();
-    cPesan.price.value = widget.product.price[myselected].toInt();
-    cPesan.categories.value = widget.product.categories[myselected].toString();
+    cPesan.price.value = widget.product.price[myselected!];
+    cPesan.categories.value = widget.product.categories[myselected!].toString();
     print(cPesan.categories.value.toString() + cPesan.price.value.toString());
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 30),
@@ -146,15 +166,14 @@ class _ProductDescriptionState extends State<ProductDescription> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Text(
-            CurrencyFormat.convertToIdr(
-                widget.product.price[myselected < 0 ? 0 : myselected], 2),
+            CurrencyFormat.convertToIdr(widget.product.price[myselected!], 2),
             style: Theme.of(context).textTheme.headline6,
           ),
           SizedBox(
             height: 10,
           ),
           Text(
-            'Jadwal : ' + widget.product.time,
+            'Product : ' + widget.product.product.toString(),
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           SizedBox(
@@ -170,53 +189,35 @@ class _ProductDescriptionState extends State<ProductDescription> {
                     'Pilih Pelayanan : ',
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
-                  ListTile(
-                    leading: Radio(
-                        activeColor: kPrimaryColor,
-                        value: 0,
-                        groupValue: myselected,
-                        onChanged: (value) {
-                          setState(() {
-                            myselected = 0;
-                            // cPesan.price.value =
-                            //     widget.product.price[0].toInt();
-                            // cPesan.categories.value =
-                            //     widget.product.categories[0].toString();
-                            print(cPesan.categories.value.toString() +
-                                cPesan.price.value.toString());
-                          });
-                        }),
-                    title: Text(
-                      widget.product.categories[0].toString(),
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                  ),
-                  ListTile(
-                    leading: Radio(
-                        activeColor: kPrimaryColor,
-                        value: 1,
-                        groupValue: myselected,
-                        onChanged: (value) {
-                          setState(() {
-                            myselected = 1;
-                            // cPesan.price.value =
-                            //     widget.product.price[1].toInt();
-                            // cPesan.categories.value =
-                            //     widget.product.categories[1].toString();
-                            print(cPesan.categories.value.toString() +
-                                cPesan.price.value.toString());
-                          });
-                        }),
-                    title: Text(
-                      widget.product.categories[1].toString(),
-                      style: Theme.of(context).textTheme.bodyLarge,
+                  ...List.generate(
+                    widget.product.categories.length,
+                    (index) => ListTile(
+                      leading: Radio(
+                          activeColor: kPrimaryColor,
+                          value: index,
+                          groupValue: myselected,
+                          onChanged: (value) {
+                            setState(() {
+                              myselected = index;
+                              // cPesan.price.value =
+                              //     widget.product.price[0].toInt();
+                              // cPesan.categories.value =
+                              //     widget.product.categories[0].toString();
+                              print(cPesan.categories.value.toString() +
+                                  cPesan.price.value.toString());
+                            });
+                          }),
+                      title: Text(
+                        widget.product.categories[index].toString(),
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
           Text(
-            widget.product.description,
+            widget.product.deskripsi.toString(),
             maxLines: 4,
             style: Theme.of(context).textTheme.bodyLarge,
           ),

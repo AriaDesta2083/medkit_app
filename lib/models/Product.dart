@@ -34,9 +34,10 @@ List<DoctorList> listDoctor = [
 ];
 
 class PesananItem {
-  final int id, price;
+  final int price;
   final Timestamp datecreate;
   final String title,
+      timepick,
       product,
       categories,
       imgurl,
@@ -48,8 +49,8 @@ class PesananItem {
       kode;
 
   PesananItem({
-    required this.id,
     required this.price,
+    required this.timepick,
     required this.title,
     required this.product,
     required this.categories,
@@ -261,7 +262,8 @@ List<MCUList> listMCU = [
     price: 193200,
     rating: 4.0,
     time: 'Senin - Jumat',
-    description: '''Darah Lengkap 
+    description:
+        '''Darah Lengkap 
 Urine Lengkap 
 Feaces Lengkap 
 Gula Darah Sewaktu 
@@ -274,7 +276,8 @@ Pemeriksaan Fisik oleh Dokter''',
     price: 233700,
     rating: 4.3,
     time: 'Senin - Jumat',
-    description: '''Darah Lengkap 
+    description:
+        '''Darah Lengkap 
     Urine Lengkap 
     HbsAg Kreatinin 
     Gula Darah Sewaktu 
@@ -287,7 +290,8 @@ Pemeriksaan Fisik oleh Dokter''',
     price: 444600,
     rating: 4.4,
     time: 'Senin - Jumat',
-    description: '''Darah Lengkap 
+    description:
+        '''Darah Lengkap 
 Lemak Lengkap 
 Asam Urat 
 SGPT Kreatinin 
@@ -303,7 +307,8 @@ Pemeriksaan Fisik oleh Dokter''',
     price: 509200,
     rating: 4.7,
     time: 'Senin - Jumat',
-    description: '''Darah Lengkap 
+    description:
+        '''Darah Lengkap 
 Lemak Lengkap 
 Asam Urat 
 SGOT 
@@ -322,7 +327,8 @@ Pemeriksaan Fisik oleh Dokter''',
     price: 646950,
     rating: 4.9,
     time: 'Senin - Jumat',
-    description: '''Darah Lengkap 
+    description:
+        '''Darah Lengkap 
 Lemak Lengkap 
 Urine Lengkap 
 Feaces Lengkap 
@@ -372,7 +378,8 @@ List<RawatList> listRawat = [
       title: 'VVIP A',
       rating: 5.0,
       price: 0000000,
-      description: '''Bed Electric
+      description:
+          '''Bed Electric
 TV LCD
 Lemari Es
 Ruang Tamu
@@ -393,7 +400,8 @@ Kamar Mandi dengan Air Hangat
       title: 'VVIP B',
       rating: 5.0,
       price: 0000000,
-      description: '''
+      description:
+          '''
 Bed Electric
 TV LCD
 Lemari Es
@@ -414,7 +422,8 @@ Kamar Mandi dengan Air Hangat''',
       title: 'KELAS 1',
       rating: 5.0,
       price: 0000000,
-      description: '''1 Bed Pasien
+      description:
+          '''1 Bed Pasien
 Sofa Keluarga
 Lemari Es
 TV
@@ -432,7 +441,8 @@ Kamar Mandi dengan Air Hangat
       title: 'KELAS 2',
       price: 0000000,
       rating: 5.0,
-      description: '''1 Bed Pasien
+      description:
+          '''1 Bed Pasien
 Sofa Keluarga
 Lemari Es
 TV

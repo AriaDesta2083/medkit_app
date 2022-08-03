@@ -52,7 +52,11 @@ class _CompletePesanFormState extends State<CompletePesanForm> {
   final List<String?> errors = [];
   final cpayment = Get.put(CPayment());
   final cPesan = Get.put(CPemesanan());
-  DateTime selectedDay = DateTime.now();
+  DateTime selectedDay = DateTime.now().weekday == 6
+      ? DateTime.now().add(Duration(days: 2))
+      : DateTime.now().weekday == 7
+          ? DateTime.now().add(Duration(days: 1))
+          : DateTime.now();
   DateTime date = DateTime.now().weekday == 6
       ? DateTime.now().add(Duration(days: 2))
       : DateTime.now().weekday == 7
@@ -128,7 +132,7 @@ class _CompletePesanFormState extends State<CompletePesanForm> {
                     onPressed: () {
                       showDatePicker(
                           context: context,
-                          initialDate: date,
+                          initialDate: selectedDay,
                           locale: Locale("id", "ID"),
                           firstDate: date,
                           lastDate: DateTime(DateTime.now().year + 2),
@@ -151,14 +155,15 @@ class _CompletePesanFormState extends State<CompletePesanForm> {
                             selectedDay = value;
                             datepick = DateFormat('EEEE, dd MMMM y', 'id')
                                 .format(selectedDay);
-                            print(DateFormat('EEEE, dd MMMM y', 'id')
-                                .format(selectedDay));
+
+                            cPesan.datepick.value =
+                                DateFormat('yyyy-MM-dd').format(selectedDay);
                           }
                         });
                       });
                     },
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(datepick.toString()),
                         Icon(
@@ -168,7 +173,88 @@ class _CompletePesanFormState extends State<CompletePesanForm> {
                       ],
                     )),
 
-                SizedBox(height: getProportionateScreenHeight(30)),
+                SizedBox(height: getProportionateScreenHeight(20)),
+                ElevatedButton(
+                  onPressed: () {
+                    Get.defaultDialog(
+                      title: 'Waku Janji Medis',
+                      content: Container(
+                        margin: const EdgeInsets.all(2),
+                        child: Wrap(spacing: 20, runSpacing: 10, children: [
+                          ...List.generate(
+                            cPesan.jamOP.length,
+                            (item) => Container(
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                    color: (cPesan.timepick.value ==
+                                            cPesan.jamOP[item].toString())
+                                        ? kOrange
+                                        : kPrimaryColor,
+                                    boxShadow: shadowBOX),
+                                width: 50,
+                                height: 30,
+                                child: InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      cPesan.timepick.value =
+                                          cPesan.jamOP[item].toString();
+                                      Get.back();
+                                    });
+                                  },
+                                  child: Text(
+                                    cPesan.jamOP[item].toString(),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(color: kWhite),
+                                  ),
+                                )),
+                          ),
+                        ]),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                      fixedSize: Size(SizeConfig.screenWidth, 30),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      primary: kPrimaryColor,
+                      elevation: 0.5,
+                      shadowColor: kShadow),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(cPesan.timepick.toString()),
+                      Icon(
+                        Icons.calendar_month,
+                        color: kWhite,
+                      )
+                    ],
+                  ),
+                ),
+                // Container(
+                //   margin: EdgeInsets.all(2),
+                //   child: Wrap(spacing: 20, runSpacing: 10, children: [
+                //     ...List.generate(
+                //       cPesan.jamOP.length,
+                //       (item) => Container(
+                //           alignment: Alignment.center,
+                //           decoration: BoxDecoration(
+                //               color: kPrimaryColor, boxShadow: shadowBOX),
+                //           width: 50,
+                //           height: 30,
+                //           child: Text(
+                //             cPesan.jamOP[item].toString(),
+                //             style: Theme.of(context)
+                //                 .textTheme
+                //                 .bodyMedium
+                //                 ?.copyWith(color: kWhite),
+                //           )),
+                //     ),
+                //   ]),
+                // ),
+
+                SizedBox(height: getProportionateScreenHeight(20)),
 
                 //! MPembayaran
                 ElevatedButton(
@@ -183,7 +269,7 @@ class _CompletePesanFormState extends State<CompletePesanForm> {
                       Get.to(() => PembayaranScreen());
                     },
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Obx(() => Text(cpayment.payment.value.toString())),
                         Icon(
@@ -193,55 +279,84 @@ class _CompletePesanFormState extends State<CompletePesanForm> {
                       ],
                     )),
 
-                SizedBox(height: getProportionateScreenHeight(40)),
+                SizedBox(height: getProportionateScreenHeight(20)),
 
                 FormError(errors: errors),
 
+                SizedBox(
+                  height: getProportionateScreenHeight(10),
+                ),
                 DefaultButton(
                   text: "CONFIRM",
-                  press: () {
+                  press: () async {
                     //! PUSH
-                    if (datepick == 'Pilih Tanggal Janji Medis') {
-                      addError(error: 'Silahkan memilih tanggal janji medis');
-                    }
-                    if (cpayment.payment.value == 'Pilih Metode Pembayaran') {
+                    if (datepick == 'Pilih Tanggal Janji Medis' &&
+                        cPesan.timepick.value == 'Pilih Waktu Janji Medis') {
+                      addError(
+                          error:
+                              'Silahkan memilih tanggal dan waktu \njanji medis');
+                    } else if (cpayment.payment.value ==
+                        'Pilih Metode Pembayaran') {
+                      removeError(
+                          error:
+                              'Silahkan memilih tanggal dan waktu \njanji medis');
                       addError(error: 'Silahkan memilih metode pembayaran');
                     } else {
                       removeError(
-                          error: 'Silahkan memilih tanggal janji medis');
+                          error:
+                              'Silahkan memilih tanggal dan waktu \njanji medis');
                       removeError(error: 'Silahkan memilih metode pembayaran');
+
                       if (_formKey.currentState!.validate()) {
                         _formKey.currentState!.save();
                         KeyboardUtil.hideKeyboard(context);
-
-                        //! FINAL PEMBAYARAN ///////
-                        cPesan.uid.value = auth!.uid;
-                        cPesan.datepick.value = datepick.toString();
-                        cPesan.payment.value =
-                            cpayment.payment.value.toString();
-                        cPesan.name.value = name.toString();
-                        setState(() {
-                          cPesan.onCekPesan();
-                          profile.doc(auth!.email).update({
-                            'name': name,
-                            'phoneNumber': phoneNumber,
-                            'address': address,
-                          });
-                        });
-                        cPesan.onPemesanan();
-                        //! ////////////////////////
-                        Get.defaultDialog(
-                            title: 'Pesanan Berhasil',
-                            titleStyle: headingStyle.copyWith(fontSize: 20),
-                            middleText:
-                                'Terima Kasih $name pesanan telah berhasi dipesan',
-                            // 'Terima Kasih $name $product.title telah berhasi dipesan',
-                            textConfirm: 'Oke',
-                            confirmTextColor: kWhite,
-                            buttonColor: kPrimaryColor,
-                            onConfirm: () {
-                              Get.offAllNamed(HomeScreen.routeName);
+                        final bool cekdatetime = await cPesan.cekWaktuPEsanan(
+                            cPesan.title.value,
+                            cPesan.datepick.value,
+                            cPesan.timepick.value);
+                        if (cekdatetime == true) {
+                          Get.defaultDialog(
+                              middleText:
+                                  'Mohon maaf Waktu atau Tanggal Janji Medis sudah digunakan user lain silahkan merubah Tanggal atau Waktu',
+                              title: 'Tanggal dan Waktu Janji Medis',
+                              confirmTextColor: kWhite,
+                              buttonColor: kPrimaryColor,
+                              onConfirm: () {
+                                setState(() {
+                                  Get.back();
+                                });
+                              });
+                        } else {
+                          //! FINAL PEMBAYARAN ///////
+                          cPesan.uid.value = auth!.uid;
+                          cPesan.datepick.value =
+                              DateFormat('yyyy-MM-dd').format(selectedDay);
+                          cPesan.payment.value =
+                              cpayment.payment.value.toString();
+                          cPesan.name.value = name.toString();
+                          setState(() {
+                            cPesan.onCekPesan();
+                            profile.doc(auth!.email).update({
+                              'name': name,
+                              'phoneNumber': phoneNumber,
+                              'address': address,
                             });
+                          });
+                          cPesan.onPemesanan();
+                          //! ////////////////////////
+                          Get.defaultDialog(
+                              title: 'Pesanan Berhasil',
+                              titleStyle: headingStyle.copyWith(fontSize: 20),
+                              middleText:
+                                  'Terima Kasih $name pesanan telah berhasi dipesan',
+                              // 'Terima Kasih $name $product.title telah berhasi dipesan',
+                              textConfirm: 'Oke',
+                              confirmTextColor: kWhite,
+                              buttonColor: kPrimaryColor,
+                              onConfirm: () {
+                                Get.offAllNamed(HomeScreen.routeName);
+                              });
+                        }
                       }
                     }
                   },

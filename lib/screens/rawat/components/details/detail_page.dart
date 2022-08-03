@@ -31,7 +31,7 @@ class DetailRawatScreen extends StatelessWidget {
             text: "PESAN",
             press: () {
               //! change data
-              cPesan.id.value = agrs.product.id.toInt();
+              cPesan.id.value = agrs.product.id.toString();
               cPesan.title.value = agrs.product.title.toString();
               cPesan.product.value = 'Rawat Inap';
               cPesan.price.value = agrs.product.price.toInt();
