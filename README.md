@@ -1,6 +1,7 @@
 # medkit_app
 
-A new Flutter project.
+Flutter project.
+Publikasi product [video](https://youtu.be/WqGy8_-5bLE)
 
 ## Getting Started
 
